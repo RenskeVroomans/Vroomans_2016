@@ -1,0 +1,208 @@
+#include "Network.hh"
+
+
+Network::Network()
+{
+  VL=NULL;
+  AL=NULL;
+}
+
+Network::~Network()
+{  
+  iterv iv;
+  iterel el;
+  itere e;
+
+  if(VL!=NULL)
+    {
+      //delete what iterators point to
+      for(iv=VL->begin();iv!=VL->end();iv++)
+	{
+	  delete (*iv);
+	}
+
+      //delete list of pointers itself
+      iv=VL->erase(VL->begin(),VL->end());
+      //delete pointer to list
+      delete VL;
+      VL=NULL;
+    }
+
+  if(AL!=NULL)
+    {
+      for(el=AL->begin();el!=AL->end();el++)
+	{
+	  for(e=el->begin();e!=el->end();e++)
+	    {
+	      delete (*e);
+	    }
+	  e=el->erase(el->begin(),el->end());
+	}
+      //delete list of pointers itself
+      el=AL->erase(AL->begin(),AL->end());
+      //delete pointer to list
+      delete AL;
+      AL=NULL;
+    }
+}
+
+
+void Network::BuildNetwork(Genome *G)
+{
+  Genome::iter i;
+  Genome::reviter ri;
+  iterv iv;
+  iterel el;
+  itere e;
+  int genecounter;
+  Gene *gene;
+  TFBS *tfbs;
+  Vertex *ve;
+  Edge *ed;
+  int typematch;
+
+  //first pass through genome:
+  //build list of vertices
+  VL=new list<Vertex *>();
+  genecounter=0;
+  for(i=(*G).ChromBBList->begin();i!=(*G).ChromBBList->end();i++)//forward
+    {
+      if((*G).IsGene((*i)))
+	{
+	  gene=dynamic_cast<Gene *>(*i);
+	  ve=new Vertex(gene,genecounter);
+	  (*VL).push_back(ve);
+	  genecounter++;
+	}
+    }
+ 
+  int first;
+ 
+  //second pass through genome
+  //build adjacency list
+  AL=new list<list <Edge *> >();
+  for(ri=(*G).ChromBBList->rbegin();ri!=(*G).ChromBBList->rend();ri++)//backward!!
+    {
+      if((*G).IsGene((*ri)))
+	 {
+	   AL->push_front( list<Edge *>() );//start new sublist for new gene
+	   gene=dynamic_cast<Gene *>(*ri);
+	 }
+       else
+	 {
+	   tfbs=dynamic_cast<TFBS *>(*ri);//get TFBS
+	   typematch=(*tfbs).type;//get to which genes it matches, may be more than 1
+	   
+	   first=0;
+	   for(iv=(*VL).begin();iv!=(*VL).end();iv++)//look in VL not genome!
+	     {
+	       ve=(*iv);//get vertex
+	       gene=((*ve).Gen);//find gene from vertex
+	       if(typematch==(*gene).type)//see if gene matches tfbsite
+		 {	   
+		   if(first==0)//first gene corresponding to that binding site
+		     {
+		       ed=new Edge(ve,(*tfbs).weight,1);
+		       AL->front().push_front(ed);
+		       first=1;
+		     }
+		   else//more genes corresponding to that binding site
+		     {
+		       ed=new Edge(ve,(*tfbs).weight,0);
+		       AL->front().push_front(ed);
+		     }
+		 }
+	     }
+	 }
+    }
+}
+
+
+void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],double signalstates[NrSignGeneTypes])
+{
+  int i,j;
+  iterv iv;
+  iterel el;
+  itere e;
+  double transcract;
+  double maxtranscract;
+  double transcrrepr;
+  double enhancer;
+  int protein;
+  double proteinstate;
+  double Hstate;
+  double transcr[NrGeneTypes];
+  int genetype;
+  double mu;
+  double sigma;
+  double noiseenhancer;
+
+  for(i=0;i<steps;i++)
+    {
+      for(j=0;j<NrGeneTypes;j++)
+	transcr[j]=0;
+
+      iv=(*VL).begin();
+      el=(*AL).begin();
+      
+      //first step:
+      //update gene expression state based on current gene states 
+      while(iv!=(*VL).end())
+	{
+	  transcract=0;
+	  maxtranscract=0;
+	  transcrrepr=1;  
+	  for(e=el->begin();e!=el->end();e++)
+	  {
+	    if((*e)->use==1)
+	    {            
+	      //use only first gene corresponding to certain TFBS
+	      //genes of same type are already added up in protein conc
+	      //otherwise you would use them double, added up in protein conc
+	      //and link by link
+	      protein=(*e)->V->Gen->type;
+	      if((*e)->V->Gen->type < NrMatGeneTypes)//maternal TF
+		proteinstate=__gnu_cxx::power(proteinstates[protein],N);
+	      else if((*e)->V->Gen->type < NrMatGeneTypes+NrSignGeneTypes)
+		proteinstate=__gnu_cxx::power(signalstates[protein-NrMatGeneTypes],N);//cell cel TF
+	      else
+		proteinstate=__gnu_cxx::power(proteinstates[protein],N);//normal TF
+	      Hstate=__gnu_cxx::power(H,N);
+	      
+	      if((*e)->weight>0)//activate gene expression
+	      {
+		transcract=proteinstate/(Hstate+proteinstate);
+		if(transcract>maxtranscract)
+		  maxtranscract=transcract;
+	      }
+	      else if((*e)->weight<0)//repress gene expression
+		transcrrepr*=Hstate/(Hstate+proteinstate);
+	    }
+	  }//end for loop over edges coming in on this vertex of network
+	  //transcription of this gene contributes to expression of 
+	  //protein type it codes for
+	  enhancer=maxtranscract*transcrrepr*Emax;
+	  genetype=(*iv)->Gen->type;
+	  transcr[genetype]+=enhancer;
+	  
+	  //after being finished with all edges of this one gene/vertex, go to next:
+	  iv++;
+	  el++;	  
+	}//end while loop over all vertices (genes) network    
+      
+      //updating of gene states
+      for(i=0;i<NrGeneTypes;i++)
+      {
+	proteinstates[i]+=RungeKutta4(transcr[i], Decay,proteinstates[i]);  //HT*(transcr[i]-Decay*proteinstates[i]);
+	
+	if((int)(proteinstates[i])<0 ||(int)(proteinstates[i])>25000)
+	{
+	  printf("protein conc outside range %f\n",proteinstates[i]);
+	  exit(1);
+	}
+      }
+	
+    }//end for time iteration loop
+}//end function
+
+

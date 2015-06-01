@@ -1,0 +1,7 @@
+*.[od]
+*.dat
+*~
+*.png
+testdirs/
+bin/
+testprog/bin/
