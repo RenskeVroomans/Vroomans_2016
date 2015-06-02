@@ -322,30 +322,48 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 {
   list<Cell>::iterator iter;
     
+  
   for(iter=cells.begin(); iter!=cells.end(); ++iter)
   {
-    if (cells.size()>=NrFinalCells) //animal too big: do not divide, kill the animal.
+  
+    ///animal too big: do not divide.
+    if (cells.size()>=NrFinalCells) 
       return;
     
-    ///if the cell has a high concentration of growth gene, divide.
-    else if((*iter).proteinstates[GrowGeneNr]>ThOn && uniform() < 0.95)
+    ///reset division counter if the growth gene is below the activation threshold
+    if((*iter).proteinstates[GrowGeneNr]<ThOff)
     {
-      Cell c(anrcells_);
-      anrcells_++;
-      c.SetCellState();
-      for(int i=0;i<NrGeneTypes;i++) //set daughter cell to state of parent cell
+      (*iter).divisioncounter=0;
+    }
+    
+    ///if the cell has a high concentration of growth gene, increase division counter or divide.
+    else if((*iter).proteinstates[GrowGeneNr]>ThOn)
+    {
+      if((*iter).divisioncounter>=divinterval && uniform()>0.95)
       {
-	c.proteinstates[i]=(*iter).proteinstates[i];
-	c.maintproteinstates[i]=(*iter).maintproteinstates[i];
-	c.varmaintproteinstates[i]=(*iter).varmaintproteinstates[i];
+	(*iter).divisioncounter=0; //reset division counter
+	Cell c(anrcells_);
+	anrcells_++;
+	c.SetCellState();
+	//set daughter cell to state of parent cell
+	for(int i=0;i<NrGeneTypes;i++) 
+	{
+	  c.proteinstates[i]=(*iter).proteinstates[i];
+	  c.maintproteinstates[i]=(*iter).maintproteinstates[i];
+	  c.varmaintproteinstates[i]=(*iter).varmaintproteinstates[i];
+	}
+	/*
+	 / //h*alve the concentration of the grow gene
+	 c.proteinstates[GrowGeneNr]*=0.5;
+	 (*iter).proteinstates[GrowGeneNr]*=0.5;
+	 */
+	cells.insert(iter,c);//cell is inserted before the current cell.
+	//nrofdivs++;
       }
       
-      ///halve the concentration of the grow gene
-      c.proteinstates[GrowGeneNr]*=0.5;
-      (*iter).proteinstates[GrowGeneNr]*=0.5;
-      
-      cells.insert(iter,c);//cell is inserted before the current cell.
-      //nrofdivs++;
+      else
+	(*iter).divisioncounter++;
+	
     }
   }
  
@@ -893,16 +911,20 @@ void Agent::WriteSignalProfiles(char *dirname)
 
  
   k=0;
-  sprintf(fname,"%s/%s/SignalProfiles%.10d_time%i",despath,dirname,agentid,k*StorageInt);
-  f=fopen(fname,"w");
-  for(i=0;i<NrFinalCells;i++)
+  for(k=0; k<NrStorages; k++)
+  {
+    sprintf(fname,"%s/%s/SignalProfiles%.10d_time%i",despath,dirname,agentid,k*StorageInt);
+    f=fopen(fname,"w");
+    for(i=0;i<NrFinalCells;i++)
     {      
       fprintf(f,"%i\t",i);
       for(j=0;j<NrGeneTypes;j++)
 	fprintf(f,"%i\t",E[k][i][j]);
       fprintf(f,"\n"); 
     }
-  fclose(f);  
+    fclose(f);
+  }
+  /*
   k=1;
   sprintf(fname,"%s/%s/SignalProfiles%.10d_time%i",despath,dirname,agentid,k*StorageInt);
   f=fopen(fname,"w");
@@ -1014,7 +1036,7 @@ void Agent::WriteSignalProfiles(char *dirname)
       fprintf(f,"\n"); 
     }
   fclose(f); 
- 
+ */
   ////Temporal Dynamics///
   j=0;
   sprintf(fname,"%s/%s/TemporalDynamics%.10d_Cell%i",despath,dirname,agentid,j);
@@ -1166,11 +1188,14 @@ void Agent::WriteFitnessDetails(char *dirname)
   f=fopen(fname,"w");
   fprintf(f,"nrbands %i\n",nrbands);
   fprintf(f,"nrlongbands %i\n",nrlongbands);
+  fprintf(f,"bodysize %i\n",cells.size());
   fprintf(f,"nonexpfitness %f\n",nonexpfitness);
   fprintf(f,"fitness %f\n",fitness);
   fprintf(f,"glpenalty %f\n",glpenalty);
   fprintf(f,"instpenalty %f\n",instpenalty);
   fprintf(f,"shortsegpenalty %f\n",shortsegpenalty);
+  fprintf(f,"sizefitness %f\n",sizefit);
+  
   for(i=0;i<nrbands;i++)
     {
       j=(int)(bands[i][0]+0.5*bands[i][2]);

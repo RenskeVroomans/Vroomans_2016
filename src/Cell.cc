@@ -7,6 +7,7 @@ Cell::Cell(int cid)
   int i;
   age=0;
   id=cid;
+  divisioncounter=0;
   for(i=0;i<NrGeneTypes;i++)
   {
     proteinstates[i]=0;
@@ -47,5 +48,6 @@ void Cell::UpdateCellAge()
 {
   age++;
 }
+
 
 

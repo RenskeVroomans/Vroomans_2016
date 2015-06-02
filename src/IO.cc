@@ -100,7 +100,7 @@ int ReadPars(int argc, char* argv[])
     ("tfbspen", po::value<double>(&tfbspen)->default_value(0.000001),"fitness penalty for nr of tfbs")
     ("sizebonus", po::value<double>(&sizebonus)->default_value(0.1),"fitness bonus for being closer to target size")
     ("sizepen", po::value<double>(&sizepen)->default_value(2.),"fitness penalty for exceeding target size")
-    ("stablesizepen", po::value<double>(&sizepen)->default_value(2.),"fitness penalty for dividing within maintenance period")
+    ("stablesizepen", po::value<double>(&stablesizepen)->default_value(0.),"fitness penalty for dividing within maintenance period")
     //used in Genome.cc
     ("AvCon", po::value<int>(&AvCon)->default_value(3), "average connectivity of a node?")
     ("fac", po::value<double>(&fac)->default_value(100))
