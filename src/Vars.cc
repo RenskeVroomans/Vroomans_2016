@@ -14,11 +14,10 @@ double ThOn=80.; //threshold value for a gene to be considered 'on' (in fitness/
 double ThOff=20.;//threshold val for gene to be considered 'off'
 double Emax=100.0;
 double Decay=0.3;
-//double morphprod=0.5;
 double morphdecay=0.025; //0.05
-int growzonesize=5;
+double DifCoef=0.;
+int Nrdiffsteps=10;
 int divinterval=5;//double divprob=0.83;
-int divtime=600;//double divprob=0.83;
 double HT=0.2;//0.2;//1.;//0.5;
 int MaintInt=20;//10;//20;
 int InitNrCells=5;//128;;//1;

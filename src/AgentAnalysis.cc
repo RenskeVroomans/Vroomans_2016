@@ -1168,8 +1168,9 @@ void Agent::WriteVideoPicture(int gene, int time, int max)
   const int seg=gene; //the gene to make a picture of.
   //printf("am here!!\n");
   int tissuelength=0;
-  if (time<(divtime/StorageInt))
-    tissuelength=(InitNrCells+1+time*((double)StorageInt/(double)divinterval))*zoom;
+
+  if(cells.size()<NrFinalCells)
+    tissuelength=cells.size()*zoom;
   else
     tissuelength=-1;
   

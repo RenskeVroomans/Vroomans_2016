@@ -32,8 +32,9 @@ void Cell::SetCellState()
     {
       if(i<NrMatGeneTypes)
 	proteinstates[i]=0;
-     // else if(i<NrMatGeneTypes+NrSignGeneTypes+4)//!!!!!
-	//proteinstates[i]=100.0;
+      //else if(i>SegmGeneNr &&i<=SegmGeneNr+3)//switch on 3 genes after the segm gene
+      else if (i<NrMatGeneTypes+NrSignGeneTypes+1)//switch on the signalling genes and the growth gene
+	proteinstates[i]=100.0;
       else
 	proteinstates[i]=0.0;
     }

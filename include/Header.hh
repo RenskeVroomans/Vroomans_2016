@@ -29,6 +29,9 @@ using namespace std;
 
 
 //#define GRADIENT
+//#define FREEMORPH
+#define POSTERIORSIGNAL
+//#define MORPHDIFF
 //#define WAVEFRONT
 
 
@@ -62,11 +65,10 @@ extern double ThOn; //threshold value for a gene to be considered 'on' (in fitne
 extern double ThOff;//threshold val for gene to be considered 'off'
 extern double Emax;
 extern double Decay;
-//double morphprod=0.5;
 extern double morphdecay; //0.05
-extern int growzonesize;
+extern double DifCoef;
+extern int Nrdiffsteps;
 extern int divinterval;//double divprob=0.83;
-extern int divtime; 
 extern double HT;//0.2;//1.;//0.5;
 extern int MaintInt;//10;//20;
 extern int InitNrCells;//128;;//1;

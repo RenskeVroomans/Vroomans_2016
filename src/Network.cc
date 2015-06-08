@@ -149,42 +149,50 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
       //update gene expression state based on current gene states 
       while(iv!=(*VL).end())
 	{
-	  transcract=0;
-	  maxtranscract=0;
-	  transcrrepr=1;  
-	  for(e=el->begin();e!=el->end();e++)
+	  #ifndef FREEMORPH
+	  if((*iv)->Gen->type<NrMatGeneTypes)
+	    ;//not influenced, externally determined
+	  else
 	  {
-	    if((*e)->use==1)
-	    {            
-	      //use only first gene corresponding to certain TFBS
-	      //genes of same type are already added up in protein conc
-	      //otherwise you would use them double, added up in protein conc
-	      //and link by link
-	      protein=(*e)->V->Gen->type;
-	      if((*e)->V->Gen->type < NrMatGeneTypes)//maternal TF
-		proteinstate=__gnu_cxx::power(proteinstates[protein],N);
-	      else if((*e)->V->Gen->type < NrMatGeneTypes+NrSignGeneTypes)
-		proteinstate=__gnu_cxx::power(signalstates[protein-NrMatGeneTypes],N);//cell cel TF
-	      else
-		proteinstate=__gnu_cxx::power(proteinstates[protein],N);//normal TF
-	      Hstate=__gnu_cxx::power(H,N);
-	      
-	      if((*e)->weight>0)//activate gene expression
-	      {
-		transcract=proteinstate/(Hstate+proteinstate);
-		if(transcract>maxtranscract)
-		  maxtranscract=transcract;
+	    #endif
+	    transcract=0;
+	    maxtranscract=0;
+	    transcrrepr=1;  
+	    for(e=el->begin();e!=el->end();e++)
+	    {
+	      if((*e)->use==1)
+	      {            
+		//use only first gene corresponding to certain TFBS
+		//genes of same type are already added up in protein conc
+		//otherwise you would use them double, added up in protein conc
+		//and link by link
+		protein=(*e)->V->Gen->type;
+		if((*e)->V->Gen->type < NrMatGeneTypes)//maternal TF
+		  proteinstate=__gnu_cxx::power(proteinstates[protein],N);
+		else if((*e)->V->Gen->type < NrMatGeneTypes+NrSignGeneTypes)
+		  proteinstate=__gnu_cxx::power(signalstates[protein-NrMatGeneTypes],N);//cell cel TF
+		else
+		  proteinstate=__gnu_cxx::power(proteinstates[protein],N);//normal TF
+		Hstate=__gnu_cxx::power(H,N);
+		
+		if((*e)->weight>0)//activate gene expression
+		{
+		  transcract=proteinstate/(Hstate+proteinstate);
+		  if(transcract>maxtranscract)
+		    maxtranscract=transcract;
+		}
+		else if((*e)->weight<0)//repress gene expression
+		  transcrrepr*=Hstate/(Hstate+proteinstate);
 	      }
-	      else if((*e)->weight<0)//repress gene expression
-		transcrrepr*=Hstate/(Hstate+proteinstate);
-	    }
-	  }//end for loop over edges coming in on this vertex of network
-	  //transcription of this gene contributes to expression of 
-	  //protein type it codes for
-	  enhancer=maxtranscract*transcrrepr*Emax;
-	  genetype=(*iv)->Gen->type;
-	  transcr[genetype]+=enhancer;
-	  
+	    }//end for loop over edges coming in on this vertex of network
+	    //transcription of this gene contributes to expression of 
+	    //protein type it codes for
+	    enhancer=maxtranscract*transcrrepr*Emax;
+	    genetype=(*iv)->Gen->type;
+	    transcr[genetype]+=enhancer;
+	    #ifndef FREEMORPH  
+	  }
+	  #endif
 	  //after being finished with all edges of this one gene/vertex, go to next:
 	  iv++;
 	  el++;	  
@@ -193,6 +201,11 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
       //updating of gene states
       for(i=0;i<NrGeneTypes;i++)
       {
+	#ifndef FREEMORPH
+	if(i<NrMatGeneTypes)
+	  continue;
+	#endif
+	  
 	proteinstates[i]+=RungeKutta4(transcr[i], Decay,proteinstates[i]);  //HT*(transcr[i]-Decay*proteinstates[i]);
 	
 	if((int)(proteinstates[i])<0 ||(int)(proteinstates[i])>25000)

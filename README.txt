@@ -4,6 +4,7 @@ Header:
 - GrowGeneNr
 - NrFinalCells ->150 (if grow even further than this, you cannot divide, but should also be stopped)
 
+
 Agent.cc:
 
 - removed intercalation stuff: no longer needed
@@ -20,6 +21,9 @@ WriteDivisionProfile: makes a picture of cell age.
 
 CellCellSignalling:
 could remove the morphogen gradient part: at least shut down the Gradient def.
+Instead, added a few other possibilities: Posterior cell high, with or without diffusion (DifCoef, Nrdiffsteps), or free morphogen: only initial bias.
+Gradient can still be tested, but will only yield an effect if transition to posterior growth. Can we see that bias?
+
 
 DetermineFitness:
 - added fitness for size
@@ -33,7 +37,8 @@ MaintenanceIntraCellularDynamics:
 
 
 Network.cc:
-UpdateNetworkState: the maternal gene can now be modified by other genes in the network.
+UpdateNetworkState: the maternal gene can now be modified by other genes in the network, if in header FREEMORPH is defined.
+
 
 Runge Kutta integration added; type 4 used in UpdateNetworkState.
 
@@ -42,5 +47,5 @@ To add:
 * decay evolution?
 
 Code issues:
-* can remove morphdecay variable.
-* can remove divtime
+
+

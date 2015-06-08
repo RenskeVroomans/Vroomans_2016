@@ -229,7 +229,7 @@ void Agent::FormZygote()
 
 void Agent::CellCellSignalling(int t)
 {
-  int i,j;
+  int i,j, k;
   list<Cell>::iterator iter,forw,back;
   //superimposed signalling
 #ifdef GRADIENT
@@ -246,7 +246,7 @@ void Agent::CellCellSignalling(int t)
   for(i=0;iter!=cells.end();++iter,i++)
     for(j=0;j<NrMatGeneTypes;j++)
       {
-	if(i>growzonesize){
+	if(i>0){//make growzonesize be one.
 	 (*iter).proteinstates[j]-=HT*morphdecay*(*iter).proteinstates[j];
 	}
 	else
@@ -255,6 +255,82 @@ void Agent::CellCellSignalling(int t)
 
 	  
     
+#endif
+
+#ifdef FREEMORPH
+//the morphogen behaves like every other gene; just forms asymmetric initial condition.
+#endif
+
+#ifdef POSTERIORSIGNAL
+//Posterior-most cell stays on, rest off. Gene is not regulated by network
+iter=cells.begin();
+for(i=0;iter!=cells.end();++iter,i++) 
+  for(j=0;j<NrMatGeneTypes;j++)
+  {
+    if(i>0)
+    {
+      (*iter).proteinstates[j]=0.;
+    }
+    else
+      (*iter).proteinstates[j]=Emax;
+  }
+#endif
+
+#ifdef MORPHDIFF
+//the morphogen is high in the posterior, diffuses through the tissue and decays
+double temp=0;
+double temparray[NrFinalCells];
+
+for(k=0; k<Nrdiffsteps; k++)
+{
+  //empty storage
+  for(i=0; i<NrFinalCells; i++)
+    temparray[i]=0.;
+  
+  //go through cells, find new values
+  for(i=0,iter=cells.begin();iter!=cells.end();++iter,i++) 
+  {
+    temp=0;
+    ///diffusion:
+    forw=iter;
+    ++forw;
+    back=iter;
+    --back;
+    
+    if(iter!=cells.begin())
+      temp=(*back).proteinstates[0]-(*iter).proteinstates[0];//+neighbour, -self
+    if(forw!=cells.end())
+      temp+=(*forw).proteinstates[0]-(*iter).proteinstates[0];
+    
+    temparray[i]=(HT/(double)Nrdiffsteps)*(DifCoef*temp);//-morphdecay*(*iter).proteinstates[j]);
+    //printf("i=%d, temparray=%.2lf\n",i,temparray[i]);
+    
+  }
+  //update the array
+  for(iter=cells.begin(),i=0;iter!=cells.end();++iter,i++)
+  {
+    if(i>0)
+      (*iter).proteinstates[0]+=temparray[i];
+    else{
+      (*iter).proteinstates[0]=Emax;
+      //printf("high conc\n");
+    }
+  }
+}
+
+///decay
+iter=cells.begin();
+for(i=0;iter!=cells.end();++iter,i++)
+  for(j=0;j<NrMatGeneTypes;j++)
+  {
+    if(i>0){//make growzonesize be one.
+	 (*iter).proteinstates[j]-=HT*morphdecay*(*iter).proteinstates[j];
+    }
+    else
+      (*iter).proteinstates[j]=Emax;
+  }
+
+
 #endif
 
 
