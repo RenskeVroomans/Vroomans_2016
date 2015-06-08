@@ -337,9 +337,9 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
     }
     
     ///if the cell has a high concentration of growth gene, increase division counter or divide.
-    else if((*iter).proteinstates[GrowGeneNr]>ThOn)
+    else if((*iter).proteinstates[GrowGeneNr]>=Emax/(Decay*2))
     {
-      if((*iter).divisioncounter>=divinterval && uniform()>0.95)
+      if(uniform()>0.95) //(*iter).divisioncounter>=divinterval 
       {
 	(*iter).divisioncounter=0; //reset division counter
 	Cell c(anrcells_);
@@ -352,11 +352,11 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	  c.maintproteinstates[i]=(*iter).maintproteinstates[i];
 	  c.varmaintproteinstates[i]=(*iter).varmaintproteinstates[i];
 	}
-	/*
-	 / //h*alve the concentration of the grow gene
-	 c.proteinstates[GrowGeneNr]*=0.5;
-	 (*iter).proteinstates[GrowGeneNr]*=0.5;
-	 */
+	
+	 //halve the concentration of the grow gene
+	 c.proteinstates[GrowGeneNr]=0.; //*=0.5
+	 (*iter).proteinstates[GrowGeneNr]=0.;//*=0.5;
+	 
 	cells.insert(iter,c);//cell is inserted before the current cell.
 	//nrofdivs++;
       }
