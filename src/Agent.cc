@@ -985,7 +985,7 @@ void Agent::WriteSignalProfiles(char *dirname)
   char fname[800];
   int i,j,k;
 
- 
+ /*
   k=0;
   for(k=0; k<NrStorages; k++)
   {
@@ -999,8 +999,8 @@ void Agent::WriteSignalProfiles(char *dirname)
       fprintf(f,"\n"); 
     }
     fclose(f);
-  }
-  /*
+  }*/
+  
   k=1;
   sprintf(fname,"%s/%s/SignalProfiles%.10d_time%i",despath,dirname,agentid,k*StorageInt);
   f=fopen(fname,"w");
@@ -1112,7 +1112,7 @@ void Agent::WriteSignalProfiles(char *dirname)
       fprintf(f,"\n"); 
     }
   fclose(f); 
- */
+ 
   ////Temporal Dynamics///
   j=0;
   sprintf(fname,"%s/%s/TemporalDynamics%.10d_Cell%i",despath,dirname,agentid,j);

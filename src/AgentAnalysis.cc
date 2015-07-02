@@ -1021,7 +1021,7 @@ void Agent::WriteMovieEmbryology()
 */
   
 
-void Agent::WriteSegmentEmbryology(int c)
+void Agent::WriteGeneEmbryology(int c, int gene)
 {
   int i,j,k,l;
   int ii,jj;
@@ -1038,7 +1038,7 @@ void Agent::WriteSegmentEmbryology(int c)
   int type;
   int color;
 
-  const int seg=SegmGeneNr;
+  const int seg=gene;
   int max=0;
   //find max expression of this gene
   for(i=0;i<NrStorages;i++)
@@ -1066,23 +1066,23 @@ void Agent::WriteSegmentEmbryology(int c)
 
  
   if(c==0)
-    sprintf(fname,"%s/CellTypesAgent%.10d%s.png",despath,agentid,"original");
+    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene, agentid,"original");
   else if(c==1)
-    sprintf(fname,"%s/CellTypesAgent%.10d%s.png",despath,agentid,"core");
+    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene, agentid,"core");
   else if(c==2)
     printf("WriteSegmentEmbryology: not the right pruning program!\n");
   else if(c==3)
     printf("WriteSegmentEmbryology: not the right pruning program!\n");
   else if(c==4)
-    sprintf(fname,"%s/CellTypesAgent%.10d%s.png",despath,agentid,"nrsegm");
+    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene, agentid,"nrsegm");
   else if(c==5)
     printf("WriteSegmentEmbryology: not the right pruning program!\n");
   else if(c==6)
-    sprintf(fname,"%s/CellTypesAgent%.10d%s.png",despath,agentid,"minsegm");
+    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene,agentid,"minsegm");
   else if(c==7)
     printf("WriteSegmentEmbryology: not the right pruning program!\n");
   else if(c==8)
-    sprintf(fname,"%s/CellTypesAgent%.10d%s.png",despath,agentid,"segm");
+    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene,agentid,"segm");
   else if(c==9)
     printf("WriteSegmentEmbryology: not the right pruning program!\n");
   else if(c==10)

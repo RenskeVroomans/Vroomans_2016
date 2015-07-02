@@ -29,8 +29,8 @@ using namespace std;
 
 
 //#define GRADIENT
-//#define FREEMORPH
-#define POSTERIORSIGNAL
+#define FREEMORPH
+//#define POSTERIORSIGNAL
 //#define MORPHDIFF
 //#define WAVEFRONT
 

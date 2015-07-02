@@ -85,7 +85,7 @@ class Agent
   void WriteNetwork(int c);
   void WriteNetworkProgression(int c, char* destdir, int cell);
   //void WriteMovieEmbryology();
-  void WriteSegmentEmbryology(int c);
+  void WriteGeneEmbryology(int c, int gene);
   void WriteVideo(int gene);
   void WriteVideoPicture(int gene, int time, int max);
   void WriteExtraSignalProfiles(int c);

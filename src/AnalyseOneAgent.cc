@@ -222,8 +222,8 @@ Agent* PruneAgent(Agent *A,int c)
   Ap->WriteGenome(c);
   Ap->WriteNetwork(c);
   Ap->WriteExtraSignalProfiles(c);
-  Ap->WriteSegmentEmbryology(c);
-  
+  Ap->WriteGeneEmbryology(c, SegmGeneNr);
+  Ap->WriteGeneEmbryology(c, GrowGeneNr);
   printf("accepted:%d, nonaccepted: %d\n",accepted, nonaccepted);
   printf("!!!\n");
   return Ap;
@@ -461,7 +461,8 @@ int main(int argc, char **argv)
   A1=new Agent();
 
   A1->CreateAgentFromFile(readpath,AgentID); //develop it anew
-  A1->WriteSegmentEmbryology(0); //make more pictures
+  A1->WriteGeneEmbryology(0, SegmGeneNr); //make more pictures 
+  A1->WriteGeneEmbryology(0, GrowGeneNr); //make more pictures
   A1->WriteEmbryology("");
   A1->WriteNetwork(0);    
   A1->WriteExtraSignalProfiles(0);
