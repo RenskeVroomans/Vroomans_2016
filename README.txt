@@ -16,6 +16,7 @@ FormZygote:
 DivideGrowthZone -> DivideCells()
 - Now have to check whether a cell divides: if the concentration of the growth gene is above a threshold, you may divide. Can either do this with some probability, or a clock-like system. Can start with the probability and halving the growgene, but perhaps a timer is more desirable: then you do not have to evolve the regulation for the growth gene as thoroughly.
 Indeed, now at the beginning of the run, the animal does not regulate the gene as thoroughly, and the tissue explodes unreasonably fast. Instead: add division counter to cell. After x steps, a cell has a high chance of dividing, after which the division counter is reset. 
+UPDATE: a threshold works fine, it just has to be higher!
 
 WriteDivisionProfile: makes a picture of cell age.
 

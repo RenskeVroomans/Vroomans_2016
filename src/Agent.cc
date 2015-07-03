@@ -247,7 +247,7 @@ void Agent::CellCellSignalling(int t)
     for(j=0;j<NrMatGeneTypes;j++)
       {
 	if(i>0){//make growzonesize be one.
-	 (*iter).proteinstates[j]-=HT*morphdecay*(*iter).proteinstates[j];
+	 (*iter).proteinstates[j]+=RungeKutta4(0., morphdecay,(*iter).proteinstates[j]);//-=HT*morphdecay*(*iter).proteinstates[j];
 	}
 	else
 	  (*iter).proteinstates[j]=Emax;
@@ -430,8 +430,8 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	}
 	
 	 //halve the concentration of the grow gene
-	 c.proteinstates[GrowGeneNr]=0.; //*=0.5
-	 (*iter).proteinstates[GrowGeneNr]=0.;//*=0.5;
+	 c.proteinstates[GrowGeneNr]*=0.5;//=0.; //
+	 (*iter).proteinstates[GrowGeneNr]*=0.5;//=0.;//
 	 
 	cells.insert(iter,c);//cell is inserted before the current cell.
 	//nrofdivs++;
