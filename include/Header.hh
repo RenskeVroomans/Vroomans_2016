@@ -44,7 +44,7 @@ const int NJ=30;
 //used in Agent.cc
 const int NrGeneTypes=16;
 const int NrMatGeneTypes=1;//gene 0
-const int NrSignGeneTypes=2;//4;//2;// genes that diffuse or signal to neighbours
+const int NrSignGeneTypes=0;//4;//2;// genes that diffuse or signal to neighbours
 const int GrowGeneNr=3;//NrMatGeneTypes+NrSignGeneTypes; //the gene that regulates growth
 const int SegmGeneNr=5;//NrMatGeneTypes+NrSignGeneTypes;//gene 5 (was 7) the "output" gene 
 const int NrStorages=241;//1+(NrDevSteps/StorageInt);//not read from parfile
@@ -63,7 +63,7 @@ extern int NrDevSteps;
 
 extern double ThOn; //threshold value for a gene to be considered 'on' (in fitness/stripe calculation
 extern double ThOff;//threshold val for gene to be considered 'off'
-extern double Emax;
+extern double Estart;
 extern double Decay;
 extern double morphdecay; //0.05
 extern double DifCoef;
@@ -85,7 +85,12 @@ extern double stablesizepen;
 extern int AvCon;//5;//3; //average connectivity of a node (?)
 extern double fac;
 extern double fac2;
-
+extern double Dmin;
+extern double Dmax;
+extern double Hmin;
+extern double Hmax;
+extern double Emin;
+extern double Emax;
 //used in Network.cc
 extern double H;//30;//60.;
 extern int N;//4;//2;
@@ -94,12 +99,15 @@ extern int N;//4;//2;
 /***not read from parfile, but modified upon reading***/
 extern double probnontandgenedupl;
 extern double probgenedel;//0.00120*fac;//0.000090*fac;
+extern double probgeneDDchange;
+extern double probgeneEEchange;
 //double probidimpswitch=0.000020*fac;
 extern double probtfbsweightrev;
 extern double probtfbstypeswitch;
 extern double probnontandtfbsdupl;//0.000020*fac;//per tfbs
 extern double probtfbsinnov;//per genome
 extern double probtfbsdel;//0.0000375*fac;//0.000040*fac
+extern double probtfbsHHchange;
 /**************************/
 
 //in World.cc

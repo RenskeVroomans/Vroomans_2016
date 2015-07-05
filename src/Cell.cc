@@ -14,6 +14,9 @@ Cell::Cell(int cid)
     maintproteinstates[i]=0;
     varmaintproteinstates[i]=0;
   }
+  for(i=0; i<300;i++)
+    genestates[i]=0;
+  
   for(i=0;i<NrSignGeneTypes;i++)
     signalstates[i]=0;
   
@@ -42,7 +45,7 @@ void Cell::SetCellState()
  
 void Cell::UpdateCellState(Network *N)
 {
-  N->UpdateNetworkState(1,proteinstates,signalstates);
+  N->UpdateNetworkState(1,genestates,proteinstates,signalstates);
 }
 
 void Cell::UpdateCellAge()

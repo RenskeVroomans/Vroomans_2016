@@ -250,7 +250,7 @@ void Agent::CellCellSignalling(int t)
 	 (*iter).proteinstates[j]+=RungeKutta4(0., morphdecay,(*iter).proteinstates[j]);//-=HT*morphdecay*(*iter).proteinstates[j];
 	}
 	else
-	  (*iter).proteinstates[j]=Emax;
+	  (*iter).proteinstates[j]=100.;
       }
 
 	  
@@ -743,6 +743,8 @@ void Agent::WriteGenome(char *dirname)
 	  gene=dynamic_cast<Gene *>(*it);
 	  fprintf(f,"%i ",0);//to indicate that it is a gene
 	  fprintf(f,"%i ",(gene->type));//type of gene
+	  fprintf(f,"%f ",(gene->DD));//decay rate of gene
+	  fprintf(f,"%f ",(gene->EE));//decay rate of gene
 	}
       else if(G->IsTFBS(*it))
 	{
@@ -752,6 +754,7 @@ void Agent::WriteGenome(char *dirname)
 	  else
 	    fprintf(f,"%i ",1);//to indicate that it is a activating tfbs
 	  fprintf(f,"%i ",(tfbs->type));//type of tfbs
+	  fprintf(f,"%f ",(tfbs->HH));//Hill constant of tfbs
 	}
     }
   fclose(f);

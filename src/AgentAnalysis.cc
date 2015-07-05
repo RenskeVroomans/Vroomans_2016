@@ -1693,7 +1693,7 @@ void Agent::DetermineAttractorProperties()
       //iteratively update cell state
       for(i=0;i<NrDevSteps;i++)
 	{
-	  N->UpdateNetworkState(1,(*iter).proteinstates,(*iter).signalstates);
+	  N->UpdateNetworkState(1,(*iter).genestates,(*iter).proteinstates,(*iter).signalstates);
 
 	  for(j=0;j<NrSignGeneTypes/2;j++)//direct cell cell communication
 	    (*iter).signalstates[j]=0;//no input or yourself????

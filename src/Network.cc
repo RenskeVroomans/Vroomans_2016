@@ -102,13 +102,13 @@ void Network::BuildNetwork(Genome *G)
 		 {	   
 		   if(first==0)//first gene corresponding to that binding site
 		     {
-		       ed=new Edge(ve,(*tfbs).weight,1);
+		       ed=new Edge(ve,(*tfbs).weight,1,(*tfbs).HH);
 		       AL->front().push_front(ed);
 		       first=1;
 		     }
 		   else//more genes corresponding to that binding site
 		     {
-		       ed=new Edge(ve,(*tfbs).weight,0);
+		       ed=new Edge(ve,(*tfbs).weight,0,(*tfbs).HH);
 		       AL->front().push_front(ed);
 		     }
 		 }
@@ -118,7 +118,7 @@ void Network::BuildNetwork(Genome *G)
 }
 
 
-void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],double signalstates[NrSignGeneTypes])
+void Network::UpdateNetworkState(int steps,double genestates[300], double proteinstates[NrGeneTypes],double signalstates[NrSignGeneTypes])
 {
   int i,j;
   iterv iv;
@@ -136,6 +136,7 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
   double mu;
   double sigma;
   double noiseenhancer;
+  int genecounter;
 
   for(i=0;i<steps;i++)
     {
@@ -145,6 +146,7 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
       iv=(*VL).begin();
       el=(*AL).begin();
       
+      genecounter=0;
       //first step:
       //update gene expression state based on current gene states 
       while(iv!=(*VL).end())
@@ -173,7 +175,7 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 		  proteinstate=__gnu_cxx::power(signalstates[protein-NrMatGeneTypes],N);//cell cel TF
 		else
 		  proteinstate=__gnu_cxx::power(proteinstates[protein],N);//normal TF
-		Hstate=__gnu_cxx::power(H,N);
+		Hstate=__gnu_cxx::power((*e)->HH,N);
 		
 		if((*e)->weight>0)//activate gene expression
 		{
@@ -187,17 +189,20 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 	    }//end for loop over edges coming in on this vertex of network
 	    //transcription of this gene contributes to expression of 
 	    //protein type it codes for
-	    enhancer=maxtranscract*transcrrepr*Emax;
-	    genetype=(*iv)->Gen->type;
-	    transcr[genetype]+=enhancer;
+	    enhancer=maxtranscract*transcrrepr*(*iv)->Gen->EE;
+	    //genetype=(*iv)->Gen->type;
+	    genestates[genecounter]+=RungeKutta4(enhancer, (*iv)->Gen->DD,genestates[genecounter]);
+	    //transcr[genetype]+=enhancer;
 	    #ifndef FREEMORPH  
 	  }
 	  #endif
 	  //after being finished with all edges of this one gene/vertex, go to next:
 	  iv++;
 	  el++;	  
+	  genecounter++;
 	}//end while loop over all vertices (genes) network    
       
+      genecounter=0;
       //updating of gene states
       for(i=0;i<NrGeneTypes;i++)
       {
@@ -205,16 +210,30 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 	if(i<NrMatGeneTypes)
 	  continue;
 	#endif
-	  
-	proteinstates[i]+=RungeKutta4(transcr[i], Decay,proteinstates[i]);  //HT*(transcr[i]-Decay*proteinstates[i]);
-	
-	if((int)(proteinstates[i])<0 ||(int)(proteinstates[i])>25000)
-	{
-	  printf("protein conc outside range %f\n",proteinstates[i]);
-	  exit(1);
-	}
+	proteinstates[i]=0;  
       }
+      iv=(*VL).begin();
+      while(iv!=(*VL).end())
+      {
+	genetype=(*iv)->Gen->type;
 	
+	#ifndef FREEMORPH
+	if(genetype>=NrMatGeneTypes)
+	{
+	  #endif
+	  proteinstates[genetype]+=genestates[genecounter];
+	  
+	  if((int)(proteinstates[i])<0 ||(int)(proteinstates[i])>25000)
+	  {
+	    printf("protein conc outside range %f\n",proteinstates[i]);
+	    exit(1);
+	  }
+	  #ifndef FREEMORPH
+	}
+	#endif
+	genecounter++;
+	iv++;
+      }
     }//end for time iteration loop
 }//end function
 
