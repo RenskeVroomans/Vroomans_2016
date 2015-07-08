@@ -22,6 +22,8 @@ char writepath[500];
 char readpath[500];
 char extrapath[500];//for networks
 int FullAnalysis;
+char *iterdir="/iterations";
+char *prunedir="/pruning";
 
 void WriteVertexList(Agent *A,int I)
 {
@@ -168,6 +170,7 @@ void WriteVertexList(Agent *A,int I)
     }
 }
 
+/*
 Agent* PruneAgent(Agent *A,int c)
 {
   Agent *Ad;
@@ -224,6 +227,59 @@ Agent* PruneAgent(Agent *A,int c)
   //Ap->WriteExtraSignalProfiles(c);
   Ap->WriteGeneEmbryology(c, SegmGeneNr);
   Ap->WriteGeneEmbryology(c, GrowGeneNr);
+  printf("accepted:%d, nonaccepted: %d\n",accepted, nonaccepted);
+  printf("!!!\n");
+  return Ap;
+}
+*/
+
+Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands)
+{
+  Agent *Ad;
+  Agent *Ap;
+  Agent *Ap2;
+  int PruneIter=200;
+
+  int accepted=0, nonaccepted=0;
+  
+  Ap=new Agent();
+  Ap->CloneAgentFromAgent(A,A->agentid,0);
+  
+  int counter=0;
+  while(counter<PruneIter)
+  {
+    Ad=new Agent();
+    Ad->InitAgent(A->agentid,0,0);
+    Ad->G->CloneGenome(Ap->G);
+    Ad->G->PruneGenome();
+    Ad->N->BuildNetwork(Ad->G);
+    Ad->DevelopAgent();
+    Ad->DetermineFitness(1);
+    //printf("new agent: %d bands, original: %d\n", Ad->nrlongbands, A->nrlongbands);
+    
+    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize ||Ad->cells.size()>maxsize) //check whether pruning exceeds bounds
+    {
+      delete Ad;
+      Ad=NULL;
+      nonaccepted++;
+    }
+    
+    else
+    {
+      delete Ap;
+      Ap=Ad;
+      Ad=NULL; 
+      accepted++;
+    }
+    counter++;
+  }
+  
+  //Ap->WriteEmbryology(c);
+  Ap->WriteGenome(iteration);
+  Ap->WriteNetwork(iteration);
+  //Ap->WriteExtraSignalProfiles(c);
+  Ap->WriteGeneEmbryology(prunedir, iteration, SegmGeneNr);
+  Ap->WriteGeneEmbryology(prunedir,iteration, GrowGeneNr);
   printf("accepted:%d, nonaccepted: %d\n",accepted, nonaccepted);
   printf("!!!\n");
   return Ap;
@@ -378,7 +434,8 @@ void Start(int argc,char **argv)
   strcpy(despath, writepath); //now, we need to write to despath (elsewhere in one of the functions)
   
   char makedir[]="mkdir ";
-  char makecommand[100];
+  char makecommand[100], makesubdir[100], makesubdir2[100];
+  
   strcpy(makecommand, makedir);
   strcat(makecommand,despath);
   
@@ -408,7 +465,24 @@ void Start(int argc,char **argv)
 	printf("warning: could not make directory %s. Exiting...\n",writepath);
 	exit(1);
       }
+      
+      ///make subdirs
+      strcpy(makesubdir,makecommand);
+      strcpy(makesubdir2,makecommand);
+      strcat(makesubdir,iterdir);
+      strcat(makesubdir2,prunedir);
+      if(system(makesubdir)==-1){ //make directory for repeated development
+	  printf("warning: could not make directory \"iterations\". Exiting...\n");
+	  exit(1);
+      }
+      if(system(makesubdir2)==-1){ //make directory for repeated development
+	  printf("warning: could not make directory \"pruning\". Exiting...\n");
+	  exit(1);
+      }
   }
+  
+  
+  
   
 }
 
@@ -425,7 +499,10 @@ int main(int argc, char **argv)
   Agent *Anrsegm;
   Agent *Asegm;
     
-    
+// double robustnessdata[10][3]; //bodysize, bands, longbands
+  int minbands=1000,maxbands=0;
+  int minsize=1000, maxsize=0;
+  
   /**read command line parameters */
   Start(argc,argv);
  
@@ -434,28 +511,58 @@ int main(int argc, char **argv)
   dsfmt_init_gen_rand(&dsfmt,seedinitpop);//dsfmt_init_gen_rand(&dsfmt,11);
   
   /************************************/
-  /** start analysing the first agent */
-  A1=new Agent();
-
-  A1->CreateAgentFromFile(readpath,AgentID); //develop it anew
-  A1->WriteGeneEmbryology(0, SegmGeneNr); //make more pictures
-  A1->WriteGeneEmbryology(0, GrowGeneNr); //make more pictures
-  A1->WriteEmbryology("");
-  A1->WriteNetwork(0);    
-  //A1->WriteExtraSignalProfiles(0);
-  //single file for ancestry
-  A1->WriteBasicProperties(A1->agentid);
-  A1->DetermineGenomeAndNetworkProperties("original");
-  A1->WriteGenomeAndNetworkProperties(1);
-  A1->DetermineAttractorProperties();
-  A1->WriteAttractorProperties(A1->agentid);
-  A1->DetermineLoopAndMotifProperties();
-  A1->WriteLoopAndMotifProperties(A1->agentid, "original");
+  /** start analysing the (robustness of the) agent */
   
-  //A1->WriteNetworkProgression(0,extrapath,0);
- // A1->WriteNetworkProgression(0,extrapath,10);
-  //if (extravid)
-  //  A1->WriteNetworkProgression(0,extrapath,extravid);
+  sprintf(fname3,"%s/%s",writepath,"iterations.dat");
+  f3=fopen(fname3,"a");
+  char it[10];
+    
+  for (int i=0; i<10; i++) //develop the agent 10 times; check for robustness
+  {
+    printf("iteration %d\n",i);
+    A1=new Agent();
+    A1->CreateAgentFromFile(readpath,AgentID); //develop it anew
+    if(i==0) //only print data the first time
+    {
+      A1->WriteNetwork(0);    
+      //A1->WriteExtraSignalProfiles(0);
+      //single file for ancestry
+      A1->WriteBasicProperties(A1->agentid);
+      A1->DetermineGenomeAndNetworkProperties("original");
+      A1->WriteGenomeAndNetworkProperties(1);
+      A1->DetermineAttractorProperties();
+      A1->WriteAttractorProperties(A1->agentid);
+      A1->DetermineLoopAndMotifProperties();
+      A1->WriteLoopAndMotifProperties(A1->agentid, "original");
+      A1->WriteEmbryology(iterdir);
+    }
+    A1->WriteGeneEmbryology(iterdir,i+1, SegmGeneNr); //make more pictures
+    A1->WriteGeneEmbryology(iterdir,i+1, GrowGeneNr); //make more pictures
+ 
+    //     robustnessdata[i][0]=A1->cells.size();
+    //     robustnessdata[i][1]=A1->nrbands;
+    //     robustnessdata[i][2]=A1->nrlongbands;
+    fprintf(f3, "%d %d %d %d\n", i,  A1->cells.size(), A1->nrlongbands, A1->nrbands-A1->nrlongbands); //iteration, bodysize, nrlongbands, nrshortbands
+    
+    //find minimum and maximum
+    if(A1->nrlongbands<minbands)
+      minbands=A1->nrlongbands;
+    else if(A1->nrlongbands>maxbands)
+      maxbands=A1->nrlongbands;
+    if(A1->cells.size()<minsize)
+      minsize=A1->cells.size();
+    else if(A1->cells.size()>maxsize)
+      maxsize=A1->cells.size();
+ 
+    if(i!=9) //keep the last one for pruning
+     delete A1;
+  }
+  
+  fclose(f3);
+  sprintf(fname3,"%s/%s",writepath,"minmaxrobust.dat");
+  f3=fopen(fname3,"a");
+  fprintf(f3, "%d %d %d %d\n",minsize, maxsize, minbands,maxbands);
+  fclose(f3);
   
   sprintf(fname3,"%s/%s",writepath,"GeneTFBSConnectionNumbers");
   f3=fopen(fname3,"a");
@@ -464,82 +571,22 @@ int main(int argc, char **argv)
   fprintf(f3,"%i\t",A1->agentid); //1
   fprintf(f3,"%i\t%i\t",A1->G->gnrgenes_,A1->G->gnrtfbs_);//2, 3 
   
-    
-  /**core network **/
-  Acore=PruneAgent(A1,1);
-  fprintf(f3,"%i\t%i\t",Acore->G->gnrgenes_,Acore->G->gnrtfbs_);//4,5
+
+  /** repeatedly prune (may be that the core depends on the order of pruning ) **/
+  for(int j=1; j<=5; j++)
+  {
+    Acore=PruneAgent(A1, j, minsize, maxsize, minbands, maxbands);
+    fprintf(f3,"%i\t%i\t",Acore->G->gnrgenes_,Acore->G->gnrtfbs_);
+    sprintf(it,"%d",j);
+    Acore->DetermineLoopAndMotifProperties();
+    Acore->WriteLoopAndMotifProperties(Acore->agentid, it);
+    Acore->DetermineGenomeAndNetworkProperties(it);
+    Acore->WriteGenomeAndNetworkProperties(j);
+    delete Acore;
+  }
   
-  /**segmentation network **/
-  Asegm=PruneAgent(A1,8);//PruneAgent(Acore,8);
-  fprintf(f3,"%i\t%i\t",Asegm->G->gnrgenes_,Asegm->G->gnrtfbs_);//6,7
-  
-  Asegm->DetermineLoopAndMotifProperties();
-  Asegm->WriteLoopAndMotifProperties(Asegm->agentid, "segm");
-  
-  Asegm->DetermineGenomeAndNetworkProperties("segm");
-  Asegm->WriteGenomeAndNetworkProperties(2);
-  
-  /**nr segments network **/
-  Anrsegm=PruneAgent(Asegm,4);//////PruneAgent(Asegm,4);
-  fprintf(f3,"%i\t%i\t",Anrsegm->G->gnrgenes_,Anrsegm->G->gnrtfbs_);//8,9
-  Anrsegm->DetermineLoopAndMotifProperties();
-  Anrsegm->WriteLoopAndMotifProperties(Anrsegm->agentid, "nrsegm");
-  
-  Anrsegm->DetermineGenomeAndNetworkProperties("nrsegm");
-  Anrsegm->WriteGenomeAndNetworkProperties(3);
-  
-  /**min segments network **/
-  Aminsegm=PruneAgent(Anrsegm,6);////PruneAgent(A1,6);
-  fprintf(f3,"%i\t%i\n",Aminsegm->G->gnrgenes_,Aminsegm->G->gnrtfbs_);//10, 11
-  
-  Aminsegm->DetermineLoopAndMotifProperties();
-  Aminsegm->WriteLoopAndMotifProperties(Aminsegm->agentid, "minsegm");
-  
-  Aminsegm->DetermineGenomeAndNetworkProperties("minsegm");
-  Aminsegm->WriteGenomeAndNetworkProperties(4);
   fclose(f3);
   
-  
-  //create combinatorial picture with segments of all reduced agents
-  int **segarray;
-  int networks=5;
-  
-  segarray=(int **)calloc((size_t)networks, sizeof(int *));
-  if(segarray==NULL)
-  {
-    printf("error in memory allocation segarray. Abort...\n");
-    exit(1);
-  }
-  segarray[0]=(int *)calloc((size_t)networks*NrFinalCells, sizeof(int));
-  if(segarray[0]==NULL)
-  {
-    printf("error in memory allocation segarray. Abort...\n");
-    exit(1);
-  }
-  for(int i=1;i<networks;i++)
-    segarray[i]=segarray[i-1]+NrFinalCells;
-  
-  int capture=(int)(NrDevSteps/StorageInt);
-  
-  for(int i=0; i<NrFinalCells; i++)
-    segarray[0][i]=A1->E[capture][i][5];
-  for(int i=0; i<NrFinalCells; i++)
-    segarray[1][i]=Acore->E[capture][i][5];
-  for(int i=0; i<NrFinalCells; i++)
-    segarray[2][i]=Asegm->E[capture][i][5];
-  for(int i=0; i<NrFinalCells; i++)
-    segarray[3][i]=Anrsegm->E[capture][i][5];
-  for(int i=0; i<NrFinalCells; i++)
-    segarray[4][i]=Aminsegm->E[capture][i][5];
-  
-  
-  printf("so far so good!\n");
-  WriteStripePatterns(segarray, networks,NrFinalCells);
-  
-  delete Acore;
-  delete Anrsegm;
-  delete Aminsegm;
-  delete Asegm;
   return 0;
   
 }

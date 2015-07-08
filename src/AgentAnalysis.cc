@@ -275,39 +275,8 @@ void Agent::WriteGenome(int c)
   
   if(c==0)
     sprintf(fname,"%s/CodedGenomeAgent%.10d%s",despath,agentid,"original");
-  else if(c==1)
-    sprintf(fname,"%s/CodedGenomeAgent%.10d%s",despath,agentid,"core");
-  else if(c==2){
-    printf("Wrong option. no domains\n");
-    return;
-  }
-  else if(c==3){
-    printf("Wrong option. no domains\n");
-    return;
-  }
-  else if(c==4)
-    sprintf(fname,"%s/CodedGenomeAgent%.10d%s",despath,agentid,"nrsegm");
-  else if(c==5)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-   }
-  else if(c==6)
-    sprintf(fname,"%s/CodedGenomeAgent%.10d%s",despath,agentid,"minsegm");
-  else if(c==7)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==8)
-    sprintf(fname,"%s/CodedGenomeAgent%.10d%s",despath,agentid,"segm");
-  else if(c==9)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-  }
-  else if(c==10)
-    sprintf(fname,"%s/CodedGenomeAgent%.10d%s",despath,agentid,"coreminsegm");
+  else 
+    sprintf(fname,"%s/CodedGenomeAgent%.10d_%d",despath,agentid,c);
 
 
   
@@ -335,45 +304,9 @@ void Agent::WriteGenome(int c)
 
   if(c==0)
     sprintf(fname,"%s/GenomeAgent%.10d%s.dot",despath,agentid,"original");
-  else if(c==1)
-    sprintf(fname,"%s/GenomeAgent%.10d%s.dot",despath,agentid,"core");
-  else if(c==2)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==3)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==4)
-    sprintf(fname,"%s/GenomeAgent%.10d%s.dot",despath,agentid,"nrsegm");
-  else if(c==5)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==6)
-    sprintf(fname,"%s/GenomeAgent%.10d%s.dot",despath,agentid,"minsegm");
-  else if(c==7)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-   }
-  else if(c==8)
-    sprintf(fname,"%s/GenomeAgent%.10d%s.dot",despath,agentid,"segm");
-  else if(c==9)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-   }
-  else if(c==10)
-    sprintf(fname,"%s/GenomeAgent%.10d%s.dot",despath,agentid,"coreminsegm");
-  
-
-
-  
+  else 
+    sprintf(fname,"%s/GenomeAgent%.10d_%d.dot",despath,agentid,c);
+   
   f=fopen(fname,"w");
   fprintf(f,"graph genome_%i {\n",agentid);
   fprintf(f,"size=\"10,4\";\n");
@@ -442,44 +375,9 @@ void Agent::WriteNetwork(int c)
  
   if(c==0)
     sprintf(fname,"%s/NetworkAgent%.10d%s.dot",despath,agentid,"original");
-  else if(c==1)
-    sprintf(fname,"%s/NetworkAgent%.10d%s.dot",despath,agentid,"core");
-  else if(c==2)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-   }
-  else if(c==3)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-   }
-  else if(c==4)
-    sprintf(fname,"%s/NetworkAgent%.10d%s.dot",despath,agentid,"nrsegm");
-  else if(c==5)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==6)
-    sprintf(fname,"%s/NetworkAgent%.10d%s.dot",despath,agentid,"minsegm");
-  else if(c==7)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-   }
-  else if(c==8)
-    sprintf(fname,"%s/NetworkAgent%.10d%s.dot",despath,agentid,"segm");
-  else if(c==9)
-   {
-    printf("Wrong option. no domains\n");
-    return;
-   }
-  else if(c==10)
-    sprintf(fname,"%s/NetworkAgent%.10d%s.dot",despath,agentid,"coreminsegm");
+  else
+    sprintf(fname,"%s/NetworkAgent%.10d_%d.dot",despath,agentid,c);
   
-
-
   f=fopen(fname,"w");
   fprintf(f,"digraph network_%i {\n",agentid);
   fprintf(f,"size=\"10,10\";\n");
@@ -1021,7 +919,7 @@ void Agent::WriteMovieEmbryology()
 */
   
 
-void Agent::WriteGeneEmbryology(int c, int gene)
+void Agent::WriteGeneEmbryology(char *subdir, int c, int gene)
 {
   int i,j,k,l;
   int ii,jj;
@@ -1066,28 +964,10 @@ void Agent::WriteGeneEmbryology(int c, int gene)
 
  
   if(c==0)
-    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene, agentid,"original");
-  else if(c==1)
-    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene, agentid,"core");
-  else if(c==2)
-    printf("WriteSegmentEmbryology: not the right pruning program!\n");
-  else if(c==3)
-    printf("WriteSegmentEmbryology: not the right pruning program!\n");
-  else if(c==4)
-    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene, agentid,"nrsegm");
-  else if(c==5)
-    printf("WriteSegmentEmbryology: not the right pruning program!\n");
-  else if(c==6)
-    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene,agentid,"minsegm");
-  else if(c==7)
-    printf("WriteSegmentEmbryology: not the right pruning program!\n");
-  else if(c==8)
-    sprintf(fname,"%s/Gene%dAgent%.10d%s.png",despath,gene,agentid,"segm");
-  else if(c==9)
-    printf("WriteSegmentEmbryology: not the right pruning program!\n");
-  else if(c==10)
-    printf("WriteSegmentEmbryology: not the right pruning program!\n");
-  
+    sprintf(fname,"%s/%s/Gene%dAgent%.10d%s.png",despath,subdir,gene, agentid,"original");
+  else
+    sprintf(fname,"%s/%s/Gene%dAgent%.10d_%d.png",despath,subdir,gene, agentid,c);
+    
 
   PNGFileP = fopen(fname, "wb");
 
@@ -1266,42 +1146,9 @@ void Agent::WriteExtraSignalProfiles(int c)
   char ss[200];
   if(c==0)
     sprintf(ss,"original");
-  else if(c==1)
-    sprintf(ss,"core");
-  else if(c==2)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==3)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==4)
-    sprintf(ss,"nrsegm");
-  else if(c==5)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==6)
-    sprintf(ss,"minsegm");
-  else if(c==7)
-  {
-    printf("Wrong option. no domains\n");
-    return;
-  }
-  else if(c==8)
-    sprintf(ss,"segm");
-  else if(c==9)
-    {
-    printf("Wrong option. no domains\n");
-    return;
-    }
-  else if(c==10)
-    sprintf(ss,"coreminsegm");
-  
+  else
+    sprintf(ss,"_%d",c);
+    
  
   for(k=0;k<NrStorages;k+=5 )//for(k=0;k<NrStorages;k+=10)
     {

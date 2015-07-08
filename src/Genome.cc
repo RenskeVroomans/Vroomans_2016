@@ -146,7 +146,8 @@ void Genome::CreateGenomeFromFile(char *fname, int agentidnr)
   int elementtype;
   //double Emax;
   int genetypecounter;
-
+  char thisfile[1000];
+  
   ChromBBList=new list<ChromBB*>();
   glength_=0;
   gnrgenes_=0;
@@ -157,8 +158,8 @@ void Genome::CreateGenomeFromFile(char *fname, int agentidnr)
     genetypecounter=0;
   }
   else{
-    sprintf(fname,"%s/CodedGenomeAgent%.10d",fname,agentidnr);
-    f=fopen(fname,"r");
+    sprintf(thisfile,"%s/CodedGenomeAgent%.10d",fname,agentidnr);
+    f=fopen(thisfile,"r");
     genetypecounter=0;
   }
   
