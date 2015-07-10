@@ -48,6 +48,7 @@ class Agent
   void InitAgent(int aid,int pid,int t);
   void DevelopAgent();
   void FormZygote();
+  void RemoveGradient();
   void MorphogenDiffusion(int prot);
   void CellCellSignalling(int t);
   void IntracellularDynamics();

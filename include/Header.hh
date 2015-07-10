@@ -27,9 +27,11 @@ using namespace std;
 //#define NOANCESTRY
 //#define INITGENOME
 
+//#define INITGRAD
+#define TWOMORPHS
 
-//#define GRADIENT
-#define FREEMORPH
+#define GRADIENT
+//#define FREEMORPH
 //#define POSTERIORSIGNAL
 //#define MORPHDIFF
 //#define WAVEFRONT
@@ -43,12 +45,17 @@ const int NI=30;
 const int NJ=30;
 //used in Agent.cc
 const int NrGeneTypes=16;
+#ifdef TWOMORPHS
+const int NrMatGeneTypes=2;//gene 0
+#else
 const int NrMatGeneTypes=1;//gene 0
+#endif
+
 const int NrSignGeneTypes=0;//4;//2;// genes that diffuse or signal to neighbours
-const int GrowGeneNr=3;//NrMatGeneTypes+NrSignGeneTypes; //the gene that regulates growth
+const int GrowGeneNr=4;//NrMatGeneTypes+NrSignGeneTypes; //the gene that regulates growth
 const int SegmGeneNr=5;//NrMatGeneTypes+NrSignGeneTypes;//gene 5 (was 7) the "output" gene 
 const int NrStorages=241;//1+(NrDevSteps/StorageInt);//not read from parfile
-const int NrFinalCells=150;//134;//125;//200
+const int NrFinalCells=170;//134;//125;//200
 const int minbandsize=7;//9;//8;
 const int MaxNrBands=NrFinalCells/minbandsize; //not read from parfile
 

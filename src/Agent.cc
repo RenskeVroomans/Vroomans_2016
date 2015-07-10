@@ -182,13 +182,18 @@ void Agent::DevelopAgent()
   
   for(i=0;i<=NrDevSteps;i++)
   {
-
+    //printf("step %d\n",i);
     //Step 1 cell cell signalling
     CellCellSignalling(i);
     
     //Step 2 intracellular dynamics
     IntracellularDynamics();
-    
+    #ifdef TWOMORPHS
+    if(i==NrDevSteps/2)
+    {
+      RemoveGradient();
+    }
+    #endif
     //step3 divide
     DivideCells();
     
@@ -207,6 +212,17 @@ void Agent::DevelopAgent()
  
 }
 
+void Agent::RemoveGradient()
+{
+   #ifdef TWOMORPHS
+     list<Cell>::iterator iter=cells.begin();
+     for (int i=0;iter!=cells.end(); ++iter,i++)
+     {
+       (*iter).proteinstates[1]=0;
+     }
+     #endif
+}
+
 void Agent::FormZygote()
 {
 
@@ -220,10 +236,32 @@ void Agent::FormZygote()
     anrcells_++;
   }
   
+  #ifdef INITPOINT
   //Set maternal gene in posterior-most cell to 100
   list<Cell>::iterator iter=cells.begin();
   for (i=0;i<NrMatGeneTypes; i++)
+  {
     (*iter).proteinstates[i]=100.;
+  }
+  #endif
+  
+  #ifdef INITGRAD
+  list<Cell>::iterator iter=cells.begin();
+  for (i=0;iter!=cells.end(); ++iter,i++)
+  {
+    (*iter).proteinstates[0]=100.*exp(-morphdecay*i);
+  }
+  #endif
+  
+  #ifdef TWOMORPHS
+  list<Cell>::iterator iter=cells.begin();
+  (*iter).proteinstates[0]=100.;
+  list<Cell>::reverse_iterator riter=cells.rbegin();
+  for (i=0;riter!=cells.rend(); ++riter,i++)
+  {
+    (*riter).proteinstates[1]=100.*exp(-morphdecay*i);
+  }
+  #endif
    
 }
 
@@ -244,7 +282,7 @@ void Agent::CellCellSignalling(int t)
   //an intracellular gradient of maternal product slowly being degraded
   iter=cells.begin();
   for(i=0;iter!=cells.end();++iter,i++)
-    for(j=0;j<NrMatGeneTypes;j++)
+    for(j=0;j<1;j++) //j<NrMatGeneTypes. Gene nr 1 for TWOMORPHS does not decay in a normal way
       {
 	if(i>0){//make growzonesize be one.
 	 (*iter).proteinstates[j]+=RungeKutta4(0., morphdecay,(*iter).proteinstates[j]);//-=HT*morphdecay*(*iter).proteinstates[j];
