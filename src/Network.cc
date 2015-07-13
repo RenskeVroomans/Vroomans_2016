@@ -127,6 +127,9 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
   double transcract;
   double maxtranscract;
   double transcrrepr;
+  double transcr;
+  double efftranscr;
+  double efftranscr2;
   double enhancer;
   int protein;
   double proteinstate;
@@ -136,6 +139,8 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
   double mu;
   double sigma;
   double noiseenhancer;
+  
+  
 
   for(i=0;i<steps;i++)
     {
@@ -155,9 +160,15 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 	  else
 	  {
 	    #endif
+	    #ifdef SUMINTEGRATION
+	    transcr=0;
+	    #endif
+	    #ifdef MULTIPLYINTEGRATION
 	    transcract=0;
 	    maxtranscract=0;
 	    transcrrepr=1;  
+	    #endif
+	    
 	    for(e=el->begin();e!=el->end();e++)
 	    {
 	      if((*e)->use==1)
@@ -175,6 +186,10 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 		  proteinstate=__gnu_cxx::power(proteinstates[protein],N);//normal TF
 		Hstate=__gnu_cxx::power(H,N);
 		
+		#ifdef SUMINTEGRATION
+		transcr+=(*e)->weight*(proteinstate/(Hstate+proteinstate));
+		#endif
+		#ifdef MULTIPLYINTEGRATION
 		if((*e)->weight>0)//activate gene expression
 		{
 		  transcract=proteinstate/(Hstate+proteinstate);
@@ -183,11 +198,28 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 		}
 		else if((*e)->weight<0)//repress gene expression
 		  transcrrepr*=Hstate/(Hstate+proteinstate);
+		#endif
+		  		
 	      }
 	    }//end for loop over edges coming in on this vertex of network
 	    //transcription of this gene contributes to expression of 
 	    //protein type it codes for
+	    
+	    #ifdef SUMINTEGRATION
+	    efftranscr=transcr-(*iv)->Gen->Th;
+	    if(efftranscr>0)
+	    {
+	      efftranscr2=efftranscr*efftranscr;
+	      enhancer=(efftranscr2/(efftranscr2+1))*(*iv)->Gen->EE;
+	    }
+	    else
+	      enhancer=0;
+	    #endif
+	    
+	    #ifdef MULTIPLYINTEGRATION
 	    enhancer=maxtranscract*transcrrepr*Emax;
+	    #endif
+	    
 	    genetype=(*iv)->Gen->type;
 	    transcr[genetype]+=enhancer;
 	    #ifndef FREEMORPH  
