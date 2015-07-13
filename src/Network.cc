@@ -127,7 +127,7 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
   double transcract;
   double maxtranscract;
   double transcrrepr;
-  double transcr;
+  double trscr;
   double efftranscr;
   double efftranscr2;
   double enhancer;
@@ -161,7 +161,7 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 	  {
 	    #endif
 	    #ifdef SUMINTEGRATION
-	    transcr=0;
+	    trscr=0;
 	    #endif
 	    #ifdef MULTIPLYINTEGRATION
 	    transcract=0;
@@ -187,7 +187,7 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 		Hstate=__gnu_cxx::power(H,N);
 		
 		#ifdef SUMINTEGRATION
-		transcr+=(*e)->weight*(proteinstate/(Hstate+proteinstate));
+		trscr+=(*e)->weight*(proteinstate/(Hstate+proteinstate));
 		#endif
 		#ifdef MULTIPLYINTEGRATION
 		if((*e)->weight>0)//activate gene expression
@@ -206,11 +206,11 @@ void Network::UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],dou
 	    //protein type it codes for
 	    
 	    #ifdef SUMINTEGRATION
-	    efftranscr=transcr-(*iv)->Gen->Th;
+	    efftranscr=trscr;//-(*iv)->Gen->Th;
 	    if(efftranscr>0)
 	    {
 	      efftranscr2=efftranscr*efftranscr;
-	      enhancer=(efftranscr2/(efftranscr2+1))*(*iv)->Gen->EE;
+	      enhancer=(efftranscr2/(efftranscr2+1))*Emax;//(*iv)->Gen->EE;
 	    }
 	    else
 	      enhancer=0;

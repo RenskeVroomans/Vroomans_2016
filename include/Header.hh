@@ -21,6 +21,8 @@ using namespace std;
 #define TRUE 1
 #define FALSE 0
 
+#define SUMINTEGRATION
+//#define MULTIPLYINTEGRATION
 
 #define RUN
 //#define RERUN
