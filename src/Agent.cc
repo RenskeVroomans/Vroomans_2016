@@ -453,7 +453,7 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	}
 	
 	///if the cell has a high concentration of growth gene, increase division counter or divide.
-	else if((*iter).proteinstates[GrowGeneNr]>=Emax/(Decay*2))
+	else if((*iter).proteinstates[GrowGeneNr]>ThOn) //>=Emax/(Decay*2)
 	{
 	  if(uniform()>0.975)  //(*iter).divisioncounter>=divinterval
 	  {
