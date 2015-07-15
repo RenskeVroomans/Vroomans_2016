@@ -440,47 +440,49 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
   for(iter=cells.begin(); iter!=cells.end(); ++iter)
   {
   
-    ///animal too big: do not divide.
-    if (cells.size()>=NrFinalCells) 
-      return;
-    
-    ///reset division counter if the growth gene is below the activation threshold
-    if((*iter).proteinstates[GrowGeneNr]<ThOff)
+    if((*iter).id==0 || (*iter).id>=InitNrCells) //the head zone does not divide
     {
-      (*iter).divisioncounter=0;
-    }
+      ///animal too big: do not divide.
+      if (cells.size()>=NrFinalCells) 
+	return;
     
-    ///if the cell has a high concentration of growth gene, increase division counter or divide.
-    else if((*iter).proteinstates[GrowGeneNr]>=Emax/(Decay*2))
-    {
-      if(uniform()>0.975) //(*iter).divisioncounter>=divinterval 
-      {
-	(*iter).divisioncounter=0; //reset division counter
-	Cell c(anrcells_);
-	anrcells_++;
-	c.SetCellState();
-	//set daughter cell to state of parent cell
-	for(int i=0;i<NrGeneTypes;i++) 
+      ///reset division counter if the growth gene is below the activation threshold
+	if((*iter).proteinstates[GrowGeneNr]<ThOff)
 	{
-	  c.proteinstates[i]=(*iter).proteinstates[i];
-	  c.maintproteinstates[i]=(*iter).maintproteinstates[i];
-	  c.varmaintproteinstates[i]=(*iter).varmaintproteinstates[i];
+	  (*iter).divisioncounter=0;
 	}
 	
-	 //halve the concentration of the grow gene
-	 c.proteinstates[GrowGeneNr]*=0.5;//=0.; //
-	 (*iter).proteinstates[GrowGeneNr]*=0.5;//=0.;//
-	 
-	cells.insert(iter,c);//cell is inserted before the current cell.
-	//nrofdivs++;
-      }
-      
-      else
-	(*iter).divisioncounter++;
+	///if the cell has a high concentration of growth gene, increase division counter or divide.
+	else if((*iter).proteinstates[GrowGeneNr]>=Emax/(Decay*2))
+	{
+	  if(uniform()>0.975)  //(*iter).divisioncounter>=divinterval
+	  {
+	    (*iter).divisioncounter=0; //reset division counter
+	    Cell c(anrcells_);
+	    anrcells_++;
+	    c.SetCellState();
+	    //set daughter cell to state of parent cell
+	    for(int i=0;i<NrGeneTypes;i++) 
+	    {
+	      c.proteinstates[i]=(*iter).proteinstates[i];
+	      c.maintproteinstates[i]=(*iter).maintproteinstates[i];
+	      c.varmaintproteinstates[i]=(*iter).varmaintproteinstates[i];
+	    }
+	    
+	    //halve the concentration of the grow gene
+	    c.proteinstates[GrowGeneNr]*=0.5;//=0.; //
+	    (*iter).proteinstates[GrowGeneNr]*=0.5;//=0.;//
+	    
+	    cells.insert(iter,c);//cell is inserted before the current cell.
+	    //nrofdivs++;
+	  }
+	  
+	  else
+	    (*iter).divisioncounter++;
 	
+	}
     }
   }
- 
 }
 
 void Agent::StoreCellStates(int I) //this function stores the temporal info per cell, ipv per position as StoreAgentState does.
