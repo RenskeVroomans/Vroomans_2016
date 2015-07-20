@@ -700,6 +700,7 @@ void Agent::DetermineFitness(int mode)
      //Determine from the boundaries the length of bands
      //Determine which bands are long enough to count
      int length,minlength;
+     vector <int> lengtharray;
      nrbands=nrboundaries-1;
      length=0;
      minlength=minbandsize;
@@ -712,9 +713,29 @@ void Agent::DetermineFitness(int mode)
        if(length>=minlength)
        {
 	 bands[i][3]=1;
+	 /* for regularity */
+	 if(boundaries[i]<anrcells_-InitNrCells)
+	   lengtharray.push_back(length); //don't count the headbands
+	 /***/
+	   
 	 nrlongbands++;
        }
      }
+     
+     ///regularity check
+     int median;
+     int difflengths=0;
+     if(lengtharray.size()>2) //need at least 3 segments to give penalty for regularity
+     {
+       sort(lengtharray.begin(),lengtharray.end());
+       median=lengtharray[lengtharray.size()/2];
+       for(i=0; i<lengtharray.size(); i++)
+       {
+	 difflengths+=(lengtharray[i]-median)*(lengtharray[i]-median);
+       }
+     }
+
+     
      //min nr of (long enough) segments is 1
      if(nrlongbands==0)
        nrlongbands=1;
@@ -751,13 +772,16 @@ void Agent::DetermineFitness(int mode)
        }
      }
      
+     ///various penalties
      glpenalty=genepen*G->gnrgenes_+tfbspen*G->gnrtfbs_; //0.00002 and 0.000002 for sims6_gsizepen, 0.00001 and 0.000001 normal,0.0001 and 0.00001*G for sims6_gsizepen10, 0.001 and 0.0001*G for sims6_gsizepen100  
      
      shortsegpenalty=nrbands-nrlongbands;
      
-     sizefit=sizebonus*(min((double)cells.size(),(double)targetsize)-InitNrCells)-sizepen*(max(0., (double)cells.size()-(double)targetsize))-stablesizepen*(cells.size()-maintsize); //growing bigger helps by itself
+     sizefit=sizebonus*(min((double)cells.size()-InitNrCells,(double)targetsize)-InitNrCells)-sizepen*(max(0., (double)cells.size()-(double)targetsize))-stablesizepen*(cells.size()-maintsize); //growing bigger helps by itself
           
-     nonexpfitness=max(0.001,(nrlongbands+sizefit-glpenalty-instpenalty-shortsegpenalty));
+     regpenalty=regpen*difflengths; //penalty for different sizes of the "big enough" segments
+     
+     nonexpfitness=max(0.001,(nrlongbands+sizefit-glpenalty-instpenalty-shortsegpenalty-regpenalty));
      double selcoef=1.0;
      fitness=exp(selcoef*nonexpfitness)-1.;
      

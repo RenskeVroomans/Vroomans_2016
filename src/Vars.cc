@@ -32,6 +32,7 @@ double tfbspen=0.000001;//penalty for nr of tfbs
 double sizebonus=0.05;//bonus for growing towards target size
 double sizepen=2; //penalty for exceeding target size
 double stablesizepen=0.;
+double regpen=0.;
 
 //used in Genome.cc
 int AvCon=3;//5;//3; //average connectivity of a node (?)

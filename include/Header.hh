@@ -58,7 +58,7 @@ const int GrowGeneNr=4;//NrMatGeneTypes+NrSignGeneTypes; //the gene that regulat
 const int SegmGeneNr=5;//NrMatGeneTypes+NrSignGeneTypes;//gene 5 (was 7) the "output" gene 
 
 const int NrStorages=121;//1+(NrDevSteps/StorageInt);//not read from parfile
-const int NrFinalCells=170;//134;//125;//200
+const int NrFinalCells=150;//134;//125;//200
 const int minbandsize=7;//9;//8;
 const int MaxNrBands=NrFinalCells/minbandsize; //not read from parfile
 
@@ -90,6 +90,7 @@ extern double tfbspen;
 extern double sizebonus;
 extern double sizepen;
 extern double stablesizepen;
+extern double regpen;
 
 //used in Genome.cc
 extern int AvCon;//5;//3; //average connectivity of a node (?)

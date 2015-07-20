@@ -31,6 +31,7 @@ class Agent
   double instpenalty;
   double shortsegpenalty;
   double sizefit;
+  double regpenalty;
   int anrcells_;
   int maintsize;
   double wfspeed;
