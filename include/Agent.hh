@@ -15,6 +15,8 @@ class Agent
   Network *N;//1 per agent!
   list<Cell> cells;
   int E[NrStorages][NrFinalCells][NrGeneTypes]; //store spatiotemporal expression pattern
+  double averseg[NrFinalCells];//to store the average expression of the segmentation gene per position
+  double varseg[NrFinalCells];
   int cellpattern[NrStorages][NrFinalCells/10][NrGeneTypes]; //stores pattern per cell, not per position
   int types[NrStorages][NrFinalCells];//store spatiotemporal celltype pattern
   int ages[NrStorages][NrFinalCells];//store cell ages
