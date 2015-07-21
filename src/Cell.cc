@@ -26,7 +26,7 @@ Cell::~Cell()
 {
 }
 
-void Cell::SetCellState()
+void Cell::SetCellState(Genome *G)
 {
   int i;
   
@@ -41,6 +41,10 @@ void Cell::SetCellState()
       else
 	proteinstates[i]=0.0;
     }
+    
+    //update the genestates
+    for(i=0;i<G->gnrgenes_;i++)
+      genestates[i]=proteinstates[G->genetypeorder[i]]/(double)G->genetypenrs[G->genetypeorder[i]];
 }
  
 void Cell::UpdateCellState(Network *N)

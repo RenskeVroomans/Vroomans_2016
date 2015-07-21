@@ -16,6 +16,8 @@ class Genome
   int glength_;
   int gnrgenes_;
   int gnrtfbs_;
+  int genetypeorder[300];
+  int genetypenrs[NrGeneTypes];
 
   Genome();
   ~Genome();
@@ -27,6 +29,7 @@ class Genome
   bool IsGene(ChromBB *cbb) const;
   bool IsTFBS(ChromBB *cbb) const;
   int MutateGenome(int t);
+  void AdjustGeneTypeOrderTable();
   iter FindFirstTFBSInFrontOfGene(iter ii) const;
   iter FindRandomGenePosition() const;
   iter GeneMutate(iter);

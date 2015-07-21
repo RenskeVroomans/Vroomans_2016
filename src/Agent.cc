@@ -231,7 +231,7 @@ void Agent::FormZygote()
   //setup of identical cells
   for(i=0;i<startnrcells;i++){
     Cell c(i);
-    c.SetCellState();
+    c.SetCellState(G);
     cells.push_back(c);
     anrcells_++;
   }
@@ -282,6 +282,7 @@ void Agent::CellCellSignalling(int t)
   //an intracellular gradient of maternal product slowly being degraded
   iter=cells.begin();
   for(i=0;iter!=cells.end();++iter,i++)
+  {
     for(j=0;j<1;j++) //j<NrMatGeneTypes. Gene nr 1 for TWOMORPHS does not decay in a normal way
       {
 	if(i>0){//make growzonesize be one.
@@ -290,9 +291,14 @@ void Agent::CellCellSignalling(int t)
 	else
 	  (*iter).proteinstates[j]=100.;
       }
-
-	  
-    
+      
+      for(int ii=0;ii<G->gnrgenes_;ii++)
+      {
+	if(G->genetypeorder[ii]<NrMatGeneTypes)
+	  (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
+      }    
+  }
+  
 #endif
 
 #ifdef FREEMORPH
@@ -460,7 +466,7 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	    (*iter).divisioncounter=0; //reset division counter
 	    Cell c(anrcells_);
 	    anrcells_++;
-	    c.SetCellState();
+	    //c.SetCellState(G);
 	    //set daughter cell to state of parent cell
 	    for(int i=0;i<NrGeneTypes;i++) 
 	    {
@@ -468,10 +474,22 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	      c.maintproteinstates[i]=(*iter).maintproteinstates[i];
 	      c.varmaintproteinstates[i]=(*iter).varmaintproteinstates[i];
 	    }
+	    for(int k=0;k<G->gnrgenes_;k++)
+	    {
+	      c.genestates[k]=(*iter).genestates[k];
+	    }
 	    
 	    //halve the concentration of the grow gene
 	    c.proteinstates[GrowGeneNr]*=0.5;//=0.; //
 	    (*iter).proteinstates[GrowGeneNr]*=0.5;//=0.;//
+	    for(int k=0;k<G->gnrgenes_;k++)
+	    {
+	      if(G->genetypeorder[k]==GrowGeneNr)
+	      {
+		c.genestates[k]*=0.5;
+		(*iter).genestates[k]*=0.5;
+	      }
+	    }
 	    
 	    cells.insert(iter,c);//cell is inserted before the current cell.
 	    //nrofdivs++;

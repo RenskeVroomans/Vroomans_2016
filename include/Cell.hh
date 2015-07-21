@@ -24,7 +24,7 @@ class Cell
   Cell(int cid);
   ~Cell();
   // Cell& operator=(const Cell& celltocopy);
-  void SetCellState();
+  void SetCellState(Genome *G);
   void UpdateCellState(Network *N);
   void UpdateCellAge();
 };

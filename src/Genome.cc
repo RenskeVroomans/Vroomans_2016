@@ -5,6 +5,10 @@ Genome::Genome()
 {
   int i;
   ChromBBList=NULL;
+  for(i=0;i<300;i++)
+    genetypeorder[i]=-1;
+  for(i=0;i<NrGeneTypes;i++)
+    genetypenrs[i]=0;
 }
 
 Genome::~Genome()
@@ -68,6 +72,7 @@ void Genome::CloneGenome(const Genome *c)
   gnrgenes_=c->gnrgenes_;
   gnrtfbs_=c->gnrtfbs_;
   
+  AdjustGeneTypeOrderTable();
 }
 
 void Genome::GenerateGenome()
@@ -130,7 +135,9 @@ void Genome::GenerateGenome()
       gnrgenes_++;
       (*ChromBBList).push_back(gene);
     }
-  ListContent();
+  ListContent(); 
+  
+  AdjustGeneTypeOrderTable();
 }
 
 
@@ -198,7 +205,8 @@ void Genome::CreateGenomeFromFile(char *fname, int agentidnr)
 	}
     }
   fclose(f);
-
+  
+  AdjustGeneTypeOrderTable();
   //printf("created genome\n");
 }
 
@@ -238,6 +246,32 @@ int Genome::MutateGenome(int time)
   return 0;
 }
 
+void Genome::AdjustGeneTypeOrderTable()
+{
+  iter i;
+  int ii;
+  int type;
+  int counter=0;
+
+  for(ii=0;ii<300;ii++)
+    genetypeorder[ii]=-1;
+  for(ii=0;ii<NrGeneTypes;ii++)
+    genetypenrs[ii]=0;
+  
+
+  i=(*ChromBBList).begin();
+  while(i!=(*ChromBBList).end())
+    {
+      if(IsGene(*i))
+	{
+	  type=(*i)->type;
+	  genetypeorder[counter]=type;
+	  genetypenrs[type]++;
+	  counter++;
+	}
+      i++;
+     }
+}
 
 void Genome::TFBSInnovation()
 {
@@ -362,7 +396,7 @@ Genome::iter Genome::GeneMutate(iter ii)
       gnrgenes_++;
       //make sure ii points to one position further than just duplicated gene
       ii=last;
-
+      AdjustGeneTypeOrderTable();
     }
   else if(uu<probnontandgenedupl+probgenedel)
     {
@@ -386,6 +420,7 @@ Genome::iter Genome::GeneMutate(iter ii)
 	}
       else
 	ii++;
+      AdjustGeneTypeOrderTable();
     }
     else if(uu<probnontandgenedupl+probgenedel+probgeneDDchange)
     {
