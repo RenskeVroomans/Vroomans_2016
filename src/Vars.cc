@@ -12,8 +12,6 @@ double deathrate=0.5;
 //in Agent.cc
 double ThOn=80.; //threshold value for a gene to be considered 'on' (in fitness/stripe calculation
 double ThOff=20.;//threshold val for gene to be considered 'off'
-double Emax=100.0;
-double Decay=0.3;
 double morphdecay=0.025; //0.05
 double DifCoef=0.;
 int Nrdiffsteps=10;
@@ -38,21 +36,31 @@ double regpen=0.;
 int AvCon=3;//5;//3; //average connectivity of a node (?)
 double fac=100;
 double fac2=1.;
+double Dmin=0.05;
+double Dmax=0.9;
+double Hmin=10;
+double Hmax=400;
 
 //used in Network.cc
 double H=60.;//30;//60.;
 int N=2;//4;//2;
-
+double Estart=70.0;
+double Decay=0.3;
+double Emin=10.;
+double Emax=120.;
 
 /***not read from parfile, but modified upon reading***/
 double probnontandgenedupl=0.000060*fac;
 double probgenedel=0.000090*fac;//0.00120*fac;//0.000090*fac;
+double probgeneDDchange=0.000030*fac;
+double probgeneEEchange=0.000030*fac;
 //double probidimpswitch=0.000020*fac;
 double probtfbsweightrev=0.000010*fac*fac2;
 double probtfbstypeswitch=0.000010*fac*fac2;
 double probnontandtfbsdupl=0.000015*fac*fac2;//0.000020*fac;//per tfbs
 double probtfbsinnov=0.000010*fac*fac2;//per genome
 double probtfbsdel=0.000040*fac*fac2;//0.0000375*fac;//0.000040*fac
+double probtfbsHHchange=0.000020*fac*fac2;
 /**************************/
 
 //in World.cc

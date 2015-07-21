@@ -26,7 +26,7 @@ class Network
   Network();
   ~Network();
   void BuildNetwork(Genome *G);
-  void UpdateNetworkState(int steps,double proteinstates[NrGeneTypes],double signalstates[NrSignGeneTypes]);
+  void UpdateNetworkState(int steps,double genestates[300],double proteinstates[NrGeneTypes],double signalstates[NrSignGeneTypes]);
  };
 
 #endif

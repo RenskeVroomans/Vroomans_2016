@@ -7,11 +7,12 @@ class TFBS : public ChromBB
 {
  public:
   int weight;//+1 or -1
- 
+  double HH;
+  
   TFBS();//constructor
   virtual ChromBB* clone() const;
   virtual ~TFBS();//destructor
-  TFBS(int t,int w);//constructor with args
+  TFBS(int t,int w,double H);//constructor with args
   explicit TFBS(const TFBS &tfbs);//copy constructor
   
   virtual bool isEqual( const ChromBB & ) const;

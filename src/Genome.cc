@@ -116,16 +116,16 @@ void Genome::GenerateGenome()
 	      type=(int)(uniform()*NrGeneTypes);
 	      
 	      if(uniform()<0.5)
-		tfbs=new TFBS(type,+1);
+		tfbs=new TFBS(type,+1,H);
 	      else
-		tfbs=new TFBS(type,-1);
+		tfbs=new TFBS(type,-1,H);
 	      
 	      glength_++;
 	      gnrtfbs_++;
 	      (*ChromBBList).push_back(tfbs);
 	    }
 	}
-      gene=new Gene(genenr);
+      gene=new Gene(genenr,Decay, Estart);
       glength_++;
       gnrgenes_++;
       (*ChromBBList).push_back(gene);
@@ -144,9 +144,11 @@ void Genome::CreateGenomeFromFile(char *fname, int agentidnr)
   //static int genesused[NrGeneTypes];
   int type;
   int elementtype;
-  //double Emax;
+  float HHH;
   int genetypecounter;
   char thisfile[1000];
+  float decayrate;
+  float EEE;
   
   ChromBBList=new list<ChromBB*>();
   glength_=0;
@@ -168,7 +170,8 @@ void Genome::CreateGenomeFromFile(char *fname, int agentidnr)
       if(elementtype==-1)//binding site for repressing tf
 	{
 	  fscanf(f,"%i",&type);
-	  tfbs=new TFBS(type,elementtype);
+	  fscanf(f,"%f",&HHH);
+	  tfbs=new TFBS(type,elementtype,HHH);
 	  glength_++;
 	  gnrtfbs_++;
 	  (*ChromBBList).push_back(tfbs);
@@ -177,7 +180,8 @@ void Genome::CreateGenomeFromFile(char *fname, int agentidnr)
       else if(elementtype==1)//binding site for activating tf
 	{
 	  fscanf(f,"%i",&type);
-	  tfbs=new TFBS(type,elementtype);
+	  fscanf(f,"%f",&HHH);
+	  tfbs=new TFBS(type,elementtype, HHH);
 	  glength_++;
 	  gnrtfbs_++;
 	  (*ChromBBList).push_back(tfbs);
@@ -185,7 +189,9 @@ void Genome::CreateGenomeFromFile(char *fname, int agentidnr)
       else if(elementtype==0)//gene
 	{
 	  fscanf(f,"%i",&type);
-	  gene=new Gene(type);
+	  fscanf(f,"%f",&decayrate);
+	  fscanf(f,"%f",&EEE);
+	  gene=new Gene(type, decayrate, EEE);
 	  glength_++;
 	  gnrgenes_++;
 	  (*ChromBBList).push_back(gene);
@@ -243,9 +249,9 @@ void Genome::TFBSInnovation()
     {
       type=(int)(uniform()*NrGeneTypes);
       if(uniform()<0.5)
-	tfbsnew=new TFBS(type,1);
+	tfbsnew=new TFBS(type,1,H);
       else
-	tfbsnew=new TFBS(type,-1);
+	tfbsnew=new TFBS(type,-1,H);
       jj=FindRandomGenePosition();
       jj=(*ChromBBList).insert(jj,tfbsnew);
       gnrtfbs_++;
@@ -332,7 +338,10 @@ Genome::iter Genome::GeneMutate(iter ii)
   iter last;
   iter jj;
   iter kk;
-  int copylength;
+  int copylength; 
+  double temp;
+  int intchange;
+  double contchange;
   //double temp;
   Gene *gene;
 
@@ -378,6 +387,75 @@ Genome::iter Genome::GeneMutate(iter ii)
       else
 	ii++;
     }
+    else if(uu<probnontandgenedupl+probgenedel+probgeneDDchange)
+    {
+      gene=dynamic_cast<Gene *>(*ii);
+
+      temp=uniform()*0.984375;
+      if(temp<0.50)
+	contchange=0.01;
+      else if(temp<0.75)
+	contchange=0.02;
+      else if(temp<0.875)
+	contchange=0.03;
+      else if(temp<0.9375)
+	contchange=0.04;
+      else if(temp<0.96875)
+	contchange=0.05;
+      else
+	contchange=0.06;
+
+      if(uniform()<0.5)//<0.05)//OEPS!!!!!!!!!
+	gene->DD+=contchange;
+      else
+	gene->DD-=contchange;
+
+      if(gene->DD<Dmin)
+	gene->DD=Dmin;
+      else if(gene->DD>Dmax)
+	gene->DD=Dmax;
+
+      ii++;
+    }
+    else if(uu<probnontandgenedupl+probgenedel+probgeneDDchange+probgeneEEchange)
+    {
+      gene=dynamic_cast<Gene *>(*ii);
+
+      temp=uniform();
+      if(temp<0.50)
+	intchange=1;
+      else if(temp<0.75)
+	intchange=2;
+      else if(temp<0.875)
+	intchange=3;
+      else if(temp<0.9375)
+	intchange=4;
+      else if(temp<0.96875)
+	intchange=5;
+      else if(temp<0.984375)
+	intchange=6;
+      else if(temp<0.9921875)
+	intchange=7;
+      else if(temp<0.99609375)
+	intchange=8;
+      else if(temp<0.998046875)
+	intchange=9;
+      else
+	intchange=10;
+
+      if(uniform()<0.5)
+	gene->EE+=intchange;
+      else
+	gene->EE-=intchange;
+
+      if(gene->EE<Emin)
+	gene->EE=Emin;
+      else if(gene->EE>Emax)
+	gene->EE=Emax;
+
+      ii++;
+    }
+    
   else
     {
       ii++;
@@ -429,10 +507,11 @@ Genome::iter Genome::TFBSMutate(iter ii)//OK
   //Gene *gene;
   //int genenr;
   iter jj;
-  //double temp;
-  //int inttemp;
+  double temp;
+  int inttemp;
   //int type;
-
+  int intchange;
+  
   tfbs=dynamic_cast<TFBS *>(*ii);
   uu=uniform();
   if(uu<probtfbsweightrev)
@@ -459,6 +538,44 @@ Genome::iter Genome::TFBSMutate(iter ii)//OK
   else if(uu<probtfbsweightrev+probnontandtfbsdupl+probtfbsdel+probtfbstypeswitch)
     {
       (*tfbs).type=(int)(uniform()*NrGeneTypes);
+      ii++;
+    }
+    else if(uu<probtfbsweightrev+probnontandtfbsdupl+probtfbsdel+probtfbstypeswitch+probtfbsHHchange)
+    {
+      temp=uniform();
+
+      if(temp<0.50)
+	intchange=1;
+      else if(temp<0.75)
+	intchange=2;
+      else if(temp<0.875)
+	intchange=3;
+      else if(temp<0.9375)
+	intchange=4;
+      else if(temp<0.96875)
+	intchange=5;
+      else if(temp<0.984375)
+	intchange=6;
+      else if(temp<0.9921875)
+	intchange=7;
+      else if(temp<0.99609375)
+	intchange=8;
+      else if(temp<0.998046875)
+	intchange=9;
+      else
+	intchange=10;
+
+      if(uniform()<0.5)
+	tfbs->HH+=intchange;
+      else
+	tfbs->HH-=intchange;
+
+      if(tfbs->HH<Hmin)
+	tfbs->HH=Hmin;
+      else if(tfbs->HH>Hmax)
+	tfbs->HH=Hmax;
+
+
       ii++;
     }
   else 
@@ -519,15 +636,15 @@ void Genome::ListContent()
        if(IsGene(*i))
 	 {
 	   gene=dynamic_cast<Gene *>(*i);
-	   printf("g%i",(*gene).type);
+	   printf("g%i %.2lf %.2lf ",(*gene).type,(*gene).DD, (*gene).EE);
 	 }
        else if(IsTFBS(*i))
 	 {
 	   tfbs=dynamic_cast<TFBS *>(*i);
 	   if(tfbs->weight==-1)
-	     printf("-%i",(*tfbs).type);
+	     printf("-%i %.2lf ",(*tfbs).type, (*tfbs).HH);
 	   else
-	     printf("+%i",(*tfbs).type);
+	     printf("+%i %.2lf ",(*tfbs).type, (*tfbs).HH);
 	 }
      }
   printf("\n");

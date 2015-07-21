@@ -73,7 +73,7 @@ extern int NrDevSteps;
 
 extern double ThOn; //threshold value for a gene to be considered 'on' (in fitness/stripe calculation
 extern double ThOff;//threshold val for gene to be considered 'off'
-extern double Emax;
+extern double Estart;
 extern double Decay;
 extern double morphdecay; //0.05
 extern double DifCoef;
@@ -96,7 +96,12 @@ extern double regpen;
 extern int AvCon;//5;//3; //average connectivity of a node (?)
 extern double fac;
 extern double fac2;
-
+extern double Dmin;
+extern double Dmax;
+extern double Hmin;
+extern double Hmax;
+extern double Emin;
+extern double Emax;
 //used in Network.cc
 extern double H;//30;//60.;
 extern int N;//4;//2;
@@ -105,12 +110,15 @@ extern int N;//4;//2;
 /***not read from parfile, but modified upon reading***/
 extern double probnontandgenedupl;
 extern double probgenedel;//0.00120*fac;//0.000090*fac;
+extern double probgeneDDchange;
+extern double probgeneEEchange;
 //double probidimpswitch=0.000020*fac;
 extern double probtfbsweightrev;
 extern double probtfbstypeswitch;
 extern double probnontandtfbsdupl;//0.000020*fac;//per tfbs
 extern double probtfbsinnov;//per genome
 extern double probtfbsdel;//0.0000375*fac;//0.000040*fac
+extern double probtfbsHHchange;
 /**************************/
 
 //in World.cc

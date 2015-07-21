@@ -5,6 +5,7 @@ TFBS::TFBS() : ChromBB()
 {
   type=0;
   weight=0;
+  HH=0;
 }
 
 ChromBB* TFBS::clone() const
@@ -16,16 +17,19 @@ TFBS::~TFBS()
 {
 }
 
-TFBS::TFBS(int t,int w) : ChromBB() 
+TFBS::TFBS(int t,int w,double H) : ChromBB() 
 {
   type=t;
   weight=w;
+   HH=H;
 }
 
 TFBS::TFBS(const TFBS &tfbs) : ChromBB(tfbs)
 {
   type=tfbs.type;
   weight=tfbs.weight;
+  HH=tfbs.HH;
+  
 }          
      
 bool TFBS::isEqual( const ChromBB &a ) const

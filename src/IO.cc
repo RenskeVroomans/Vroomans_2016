@@ -80,7 +80,7 @@ int ReadPars(int argc, char* argv[])
     //("SegmGeneNr", po::value<int>(&SegmGeneNr)->default_value(5), "gene responsible for segmentation")//NrMatGeneTypes+NrSignGeneTypes
     ("ThOn", po::value<double>(&ThOn)->default_value(80.), "threshold val for gene to be considered on (in DetermineFitness)")
     ("ThOff", po::value<double>(&ThOff)->default_value(20.), "threshold val for gene to be considered off (in DetermineFitness)")
-    ("Emax", po::value<double>(&Emax)->default_value(100.))
+    ("Estart", po::value<double>(&Estart)->default_value(70.))
     ("Decay", po::value<double>(&Decay)->default_value(0.3))
     ("morphdecay", po::value<double>(&morphdecay)->default_value(0.05))
     ("DifCoef", po::value<double>(&DifCoef)->default_value(0.0))
@@ -108,6 +108,12 @@ int ReadPars(int argc, char* argv[])
     //used in Network.cc
     ("H", po::value<double>(&H)->default_value(60.))
     ("N", po::value<int>(&N)->default_value(2))
+    ("Dmin", po::value<double>(&Dmin)->default_value(0.05))
+    ("Dmax", po::value<double>(&Dmax)->default_value(0.9))
+    ("Hmin", po::value<double>(&Dmin)->default_value(10.))
+    ("Hmax", po::value<double>(&Dmax)->default_value(400.))
+    ("Emin", po::value<double>(&Emin)->default_value(10.))
+    ("Emax", po::value<double>(&Emax)->default_value(120.))
     //in World.cc
     ("seedmutations", po::value<int>(&seedmutations)->default_value(9))
     ("seedoutput", po::value<int>(&seedoutput)->default_value(11))
@@ -138,13 +144,15 @@ int ReadPars(int argc, char* argv[])
  
     probnontandgenedupl=0.000060*fac;
     probgenedel=0.000090*fac;//0.00120*fac;//0.000090*fac;
+    probgeneDDchange=0.000030*fac;
+    probgeneEEchange=0.000030*fac;
     //const double probidimpswitch=0.000020*fac;
     probtfbsweightrev=0.000010*fac*fac2;
     probtfbstypeswitch=0.000010*fac*fac2;
     probnontandtfbsdupl=0.000015*fac*fac2;//0.000020*fac;//per tfbs
     probtfbsinnov=0.000010*fac*fac2;//per genome
     probtfbsdel=0.000040*fac*fac2;//0.0000375*fac;//0.000040*fac
-    
+    probtfbsHHchange=0.000020*fac*fac2;
   
     
     
