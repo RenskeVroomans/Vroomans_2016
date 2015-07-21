@@ -123,7 +123,12 @@ void Agent::InitAgent(int aid,int pid,int t)
     }
   }
   
-      
+  //for array pattern checking!
+   for(j=0;j<NrFinalCells;j++)
+   {
+     averseg[j]=0;
+     varseg[j]=0;
+   }
     
 }
 
@@ -508,7 +513,7 @@ void Agent::StoreCellStates(int I) //this function stores the temporal info per 
     
     }
 }
-
+/*
 void Agent::StoreAgentState(int I)
 {
   //store cell states
@@ -534,8 +539,36 @@ void Agent::StoreAgentState(int I)
       iter++;
       j++;
     }
-}
+}*/
 
+//this one stores with fixed anterior position, ipv fixed posterior position.
+void Agent::StoreAgentState(int I)
+{
+  //store cell states
+  int j,k;
+  list<Cell>::reverse_iterator riter;
+  riter=cells.rbegin();
+
+  if(I>=NrStorages)
+    {
+      printf("storage array not large enough\n");
+      exit(1);
+    }
+
+  j=0;
+  while(riter!=cells.rend())
+    {
+      for(k=0;k<NrGeneTypes;k++)
+	E[I][j][k]=(int)(*riter).proteinstates[k]; 
+
+      types[I][j]=ProteinStateToCellType((*riter).proteinstates);
+      ages[I][j]=(*riter).age;
+
+      ++riter;
+      j++;
+    }
+}
+/*
 void Agent::MaintenanceIntracellularDynamics(int i)
 {
   int k;
@@ -558,8 +591,34 @@ void Agent::MaintenanceIntracellularDynamics(int i)
   if(i==NrDevSteps-MaintInt) //store how big the animal was at the start of the stability check window
     maintsize=cells.size();
   
+}*/
+
+//this one performs the check on the position rather than within the cell
+void Agent::MaintenanceIntracellularDynamics(int i)
+{
+  int k;
+  list<Cell>::reverse_iterator riter;
+  //store gene expression at time=endtimedevelopment-maintenanceinterval 
+  if(!averagepattern && i==NrDevSteps-MaintInt-1)
+  { 
+    for(k=0, riter=cells.rbegin();riter!=cells.rend();++riter,k++) //for now, consider NrFinalCells the max nr of cells.
+	averseg[k]=(*riter).proteinstates[SegmGeneNr];
+  }
+  else if(averagepattern && i>=NrDevSteps-MaintInt)
+  {
+    for(k=0, riter=cells.rbegin();riter!=cells.rend();++riter, k++) //for now, consider NrFinalCells the max nr of cells.
+    {
+      averseg[k]+=(*riter).proteinstates[SegmGeneNr]/(double)MaintInt;//maintproteinstates now contains the average.
+      varseg[k]+=(*riter).proteinstates[SegmGeneNr]*(*riter).proteinstates[SegmGeneNr];
+    }
+  }
+  
+  if(i==NrDevSteps-MaintInt) //store how big the animal was at the start of the stability check window
+    maintsize=cells.size();
+  
 }
 
+/*
 void Agent::DetermineFitness(int mode)
 {
   int i,j,k,ii, jj;
@@ -713,10 +772,10 @@ void Agent::DetermineFitness(int mode)
        if(length>=minlength)
        {
 	 bands[i][3]=1;
-	 /* for regularity */
+	 /// for regularity 
 	 if(boundaries[i]<anrcells_-InitNrCells)
 	   lengtharray.push_back(length); //don't count the headbands
-	 /***/
+	 
 	   
 	 nrlongbands++;
        }
@@ -788,7 +847,231 @@ void Agent::DetermineFitness(int mode)
    }
    
    //PrintCellAges();
+}*/
+
+void Agent::DetermineFitness(int mode)
+{
+  int i,j,k,ii, jj;
+  int nrboundaries=0;
+  nrbands=0;
+  nrlongbands=0;
+  int boundaries[NrFinalCells+1];//Stores positions of boundaries?
+  list<Cell>::reverse_iterator riter, forw,ext;
+  
+  if((G->CheckViability())!=TRUE && !mode)
+    fitness=-1;
+  else
+  {  
+    /// //count the boundaries of segments (where segmentation gene goes up or down)
+    //initialize the counting arrays
+    nrboundaries=0;
+    nrbands=0;
+    nrlongbands=0;
+    for(i=0;i<NrFinalCells+1;i++)//!!
+       boundaries[i]=0;
+    for(i=0;i<NrFinalCells;i++){
+      for(j=0;j<4;j++)
+	bands[i][j]=0;
+    }
+    k=SegmGeneNr; //k is the gene type which represents the segments (usually 5)
+    
+    boundaries[nrboundaries]=0;//begin of animal
+    nrboundaries++; 
+    
+    //initialize the iterator: do we include the growth zone in the fitness yes or no?    
+    riter=cells.rbegin();
+    jj=0;
+    
+    //choose whether we check over an average or compare two time points
+    if(averagepattern){
+      for(i=0; i<(cells.size()-4); i++) //posloop
+      {
+	for(j=i+1;j<i+5;j++) //neighbour loop
+	{
+	  if(j>=cells.size())
+	    break;
+	  else
+	  {
+	   if((averseg[i]<ThOff && averseg[j]>=ThOn) || (averseg[i]>=ThOn && averseg[j]<ThOff)) //boundary
+	   {
+	     if((j-i)==1)//boundary is right next to current position
+	       boundaries[nrboundaries]=j;
+	     else //try to get closer to real position
+	     {
+	       ii=i+1;
+	       while(ii<j)
+	       {
+		 if((averseg[ii]<ThOff && averseg[j]>=ThOn) || (averseg[ii]>=ThOn && averseg[j]<ThOff))
+		   i=ii;
+		 else
+		   break;
+		 ii++;
+	       }
+	       if((j-i)==1)
+		 boundaries[nrboundaries]=j;
+	       else if((j-i)==2 || (j-i)==3)
+		 boundaries[nrboundaries]=j-1;
+	       else if((j-i)==4)
+		 boundaries[nrboundaries]=j-2;
+	     }
+	     i=j-1;//boundaries[nrboundaries];
+	     j=1000;//to break out of J for loop (I think). 
+	     nrboundaries++;  
+	   }
+	  }
+	}
+      }
+    }
+    
+    else 
+    {
+      for(i=jj;riter!=cells.rend()&& i<(cells.size()-4);++riter,i++){
+	forw=riter;
+	ext=riter;
+	for(j=i+1;j<i+5;j++)//boundary need not be sharp so do not just check nearest neighbour grid point
+	  {
+	    forw++;
+	    if(forw==cells.rend())
+	      break;
+	    else
+	    {
+	      if(((*riter).proteinstates[k]<ThOff && (*forw).proteinstates[k]>=ThOn) || 
+		((*riter).proteinstates[k]>=ThOn && (*forw).proteinstates[k]<ThOff)) //there's a boundary between these two positions
+	      {
+		if((j-i)==1)//boundary is right next to current position
+		     boundaries[nrboundaries]=j;
+		else //try to get closer to real position 
+		{
+		  ii=i+1;
+		  ext++;
+		  while(ii<j)
+		  {
+		    if(((*ext).proteinstates[k]<ThOff && (*forw).proteinstates[k]>=ThOn) || 
+		      ((*ext).proteinstates[k]>=ThOn && (*forw).proteinstates[k]<ThOff))  
+		     {
+		      riter=ext;
+		      i=ii;
+		    }
+		    else
+		      ii=1000;//probably to break out of while loop :S
+		      ii++;
+		    ext++;
+		  }
+		  if((j-i)==1)
+		    boundaries[nrboundaries]=j;
+		  else if((j-i)==2 || (j-i)==3)
+		    boundaries[nrboundaries]=j-1;
+		  else if((j-i)==4)
+		    boundaries[nrboundaries]=j-2;
+		}
+		i=j-1;//boundaries[nrboundaries];
+		j=1000;//to break out of J for loop (I think). 
+		nrboundaries++;  	      
+	      }
+	    }
+	  }
+	}//cell loop
+      }
+
+     boundaries[nrboundaries]=cells.size();//end of animal //NrFinalCells
+     nrboundaries++;
+     
+     //Determine from the boundaries the number of bands
+     //Determine from the boundaries the length of bands
+     //Determine which bands are long enough to count
+     int length,minlength;
+     vector <int> lengtharray;
+     nrbands=nrboundaries-1;
+     length=0;
+     minlength=minbandsize;
+     for(i=0;i<nrbands;i++)
+     {
+       bands[i][0]=boundaries[i];//start segment
+       bands[i][1]=boundaries[i+1];//end segment
+       length=boundaries[i+1]-boundaries[i];
+       bands[i][2]=length;
+       if(length>=minlength)
+       {
+	 bands[i][3]=1;
+	 /// for regularity 
+	 if(boundaries[i]<anrcells_-InitNrCells)
+	   lengtharray.push_back(length); //don't count the headbands
+	 
+	   
+	 nrlongbands++;
+       }
+     }
+     
+     ///regularity check
+     int median;
+     int difflengths=0;
+     if(lengtharray.size()>2) //need at least 3 segments to give penalty for regularity
+     {
+       sort(lengtharray.begin(),lengtharray.end());
+       median=lengtharray[lengtharray.size()/2];
+       for(i=0; i<lengtharray.size(); i++)
+       {
+	 difflengths+=(lengtharray[i]-median)*(lengtharray[i]-median);
+       }
+     }
+
+     
+     //min nr of (long enough) segments is 1
+     if(nrlongbands==0)
+       nrlongbands=1;
+     
+    
+     for(i=0;i<nrboundaries-1;i++)
+       bandtypes[boundaries[i]]=10;
+     
+     ///check stability of the pattern
+     int differentcells=0;
+     k=SegmGeneNr;
+
+     riter=cells.rbegin();
+    
+     if(!averagepattern)
+     {
+       //compute difference between stored profile at time=enddevelopment-maintenanceinterval
+       //versus e`xpression profile at time=enddevelopment
+       
+       for(i=0;riter!=cells.rend();++riter,i++)
+       {
+	 if(((*riter).proteinstates[k]<ThOff && averseg[i]>ThOn)||
+	   ((*riter).proteinstates[k]>ThOn && averseg[i]<ThOff))
+	   differentcells++;
+       }
+       instpenalty=0.1*differentcells;
+     }
+     else{
+       for(i=0;i<cells.size();i++)
+       {
+	 varseg[i]=sqrt(varseg[i]/(double)MaintInt-averseg[i]*averseg[i]);//calculate the standard deviation at this position
+	 if(varseg[i]>5.00)
+	   differentcells++;
+	 instpenalty=0.1*differentcells;
+       }
+     }
+     
+     ///various penalties
+     glpenalty=genepen*G->gnrgenes_+tfbspen*G->gnrtfbs_; //0.00002 and 0.000002 for sims6_gsizepen, 0.00001 and 0.000001 normal,0.0001 and 0.00001*G for sims6_gsizepen10, 0.001 and 0.0001*G for sims6_gsizepen100  
+     
+     shortsegpenalty=nrbands-nrlongbands;
+     
+     sizefit=sizebonus*(min((double)cells.size()-InitNrCells,(double)targetsize)-InitNrCells)-sizepen*(max(0., (double)cells.size()-(double)targetsize))-stablesizepen*(cells.size()-maintsize); //growing bigger helps by itself
+          
+     regpenalty=regpen*difflengths; //penalty for different sizes of the "big enough" segments
+     
+     nonexpfitness=max(0.001,(nrlongbands+sizefit-glpenalty-instpenalty-shortsegpenalty-regpenalty));
+     double selcoef=1.0;
+     fitness=exp(selcoef*nonexpfitness)-1.;
+     
+   }
+   
+   //PrintCellAges();
 }
+
+
 
 void Agent::WriteGenome(char *dirname)
 {
