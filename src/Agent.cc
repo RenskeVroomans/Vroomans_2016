@@ -264,10 +264,18 @@ void Agent::FormZygote()
   list<Cell>::reverse_iterator riter=cells.rbegin();
   for (i=0;riter!=cells.rend(); ++riter,i++)
   {
-    (*riter).proteinstates[1]=100.*exp(-morphdecay*i);
+    (*riter).proteinstates[1]=100.*exp(-0.2*i);
   }
   #endif
    
+   for(iter=cells.begin();iter!=cells.end();++iter)
+   {
+     for(int ii=0;ii<G->gnrgenes_;ii++)
+     {
+       if(G->genetypeorder[ii]<NrMatGeneTypes)
+	 (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
+     }  
+   }
 }
 
 void Agent::CellCellSignalling(int t)
@@ -466,7 +474,7 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	///if the cell has a high concentration of growth gene, increase division counter or divide.
 	else if((*iter).proteinstates[GrowGeneNr]>ThOn) //>=Emax/(Decay*2)
 	{
-	  if(uniform()>0.975)  //(*iter).divisioncounter>=divinterval
+	  if(uniform()<0.975)  //(*iter).divisioncounter>=divinterval
 	  {
 	    (*iter).divisioncounter=0; //reset division counter
 	    Cell c(anrcells_);
@@ -586,7 +594,7 @@ void Agent::StoreAgentState(int I)
       j++;
     }
 }
-/*
+
 void Agent::MaintenanceIntracellularDynamics(int i)
 {
   int k;
@@ -609,8 +617,9 @@ void Agent::MaintenanceIntracellularDynamics(int i)
   if(i==NrDevSteps-MaintInt) //store how big the animal was at the start of the stability check window
     maintsize=cells.size();
   
-}*/
+}
 
+/*
 //this one performs the check on the position rather than within the cell
 void Agent::MaintenanceIntracellularDynamics(int i)
 {
@@ -634,9 +643,9 @@ void Agent::MaintenanceIntracellularDynamics(int i)
   if(i==NrDevSteps-MaintInt) //store how big the animal was at the start of the stability check window
     maintsize=cells.size();
   
-}
+}*/
 
-/*
+
 void Agent::DetermineFitness(int mode)
 {
   int i,j,k,ii, jj;
@@ -865,8 +874,8 @@ void Agent::DetermineFitness(int mode)
    }
    
    //PrintCellAges();
-}*/
-
+}
+/*
 void Agent::DetermineFitness(int mode)
 {
   int i,j,k,ii, jj;
@@ -1087,7 +1096,7 @@ void Agent::DetermineFitness(int mode)
    }
    
    //PrintCellAges();
-}
+}*/
 
 
 
