@@ -417,10 +417,12 @@ Genome::iter Genome::GeneMutate(iter ii)
 	  gnrgenes_--;//you know one gene is removed
 	  gnrtfbs_++;//of the elements counted/removed above one was not tfbs but gene
 	  ii=(*ChromBBList).erase(first,last);
+	  AdjustGeneTypeOrderTable();
+	 
 	}
       else
 	ii++;
-      AdjustGeneTypeOrderTable();
+     
     }
     else if(uu<probnontandgenedupl+probgenedel+probgeneDDchange)
     {
@@ -444,12 +446,12 @@ Genome::iter Genome::GeneMutate(iter ii)
 	gene->DD+=contchange;
       else
 	gene->DD-=contchange;
-
+      
       if(gene->DD<Dmin)
 	gene->DD=Dmin;
       else if(gene->DD>Dmax)
 	gene->DD=Dmax;
-
+            
       ii++;
     }
     else if(uu<probnontandgenedupl+probgenedel+probgeneDDchange+probgeneEEchange)
@@ -487,8 +489,7 @@ Genome::iter Genome::GeneMutate(iter ii)
 	gene->EE=Emin;
       else if(gene->EE>Emax)
 	gene->EE=Emax;
-
-      ii++;
+       ii++;
     }
     
   else
@@ -552,6 +553,7 @@ Genome::iter Genome::TFBSMutate(iter ii)//OK
   if(uu<probtfbsweightrev)
     {
       (*tfbs).weight=-(*tfbs).weight;
+      
       ii++;
     }
   else if(uu<probtfbsweightrev+probnontandtfbsdupl)
@@ -562,6 +564,7 @@ Genome::iter Genome::TFBSMutate(iter ii)//OK
       ii++;
       gnrtfbs_++;
       glength_++;
+
     }
   else if(uu<probtfbsweightrev+probnontandtfbsdupl+probtfbsdel)
     {
@@ -574,6 +577,7 @@ Genome::iter Genome::TFBSMutate(iter ii)//OK
     {
       (*tfbs).type=(int)(uniform()*NrGeneTypes);
       ii++;
+
     }
     else if(uu<probtfbsweightrev+probnontandtfbsdupl+probtfbsdel+probtfbstypeswitch+probtfbsHHchange)
     {
@@ -609,7 +613,6 @@ Genome::iter Genome::TFBSMutate(iter ii)//OK
 	tfbs->HH=Hmin;
       else if(tfbs->HH>Hmax)
 	tfbs->HH=Hmax;
-
 
       ii++;
     }

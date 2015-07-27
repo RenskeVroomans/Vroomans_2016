@@ -220,8 +220,8 @@ void Network::UpdateNetworkState(int steps,double genestates[300], double protei
 	    enhancer=maxtranscract*transcrrepr*(*iv)->Gen->EE;
 	    #endif
 	    
-	    genetype=(*iv)->Gen->type;
-	    transcr[genetype]+=enhancer;
+	    //genetype=(*iv)->Gen->type;
+	    //transcr[genetype]+=enhancer;
 
 	    //genetype=(*iv)->Gen->type;
 	    genestates[genecounter]+=RungeKutta4(enhancer, (*iv)->Gen->DD,genestates[genecounter]);
@@ -257,9 +257,9 @@ void Network::UpdateNetworkState(int steps,double genestates[300], double protei
 	  #endif
 	  proteinstates[genetype]+=genestates[genecounter];
 	  
-	  if((int)(proteinstates[i])<0 ||(int)(proteinstates[i])>25000)
+	  if((int)(proteinstates[genetype])<0 ||(int)(proteinstates[genetype])>25000)
 	  {
-	    printf("protein conc outside range %f\n",proteinstates[i]);
+	    printf("protein conc outside range %f, gene %d, genestate %f\n",proteinstates[genetype], genetype, genestates[genecounter]);
 	    exit(1);
 	  }
 	  #ifndef FREEMORPH

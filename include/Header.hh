@@ -29,8 +29,9 @@ using namespace std;
 //#define NOANCESTRY
 //#define INITGENOME
 
+#define INITPOINT
 //#define INITGRAD
-#define TWOMORPHS
+//#define TWOMORPHS
 
 #define GRADIENT
 //#define FREEMORPH

@@ -78,6 +78,7 @@ void Agent::CreateAgentFromParent(Agent *A,int agid,int t)
   //wfspeed=1.+(uniform()*0.3-0.15);//if you want to add developmental noise
   DevelopAgent();
   DetermineFitness(0);
+  //WriteGenome("testje");
 #ifdef RUN
   ancestry=A->ancestry;//copy ancestry of parent as to be your ancestry
   ancestry.push_back(A->agentid);//add your parent to your ancestry
@@ -1109,6 +1110,7 @@ void Agent::WriteGenome(char *dirname)
   TFBS *tfbs;
   
   sprintf(fname,"%s/%s/CodedGenomeAgent%.10d",despath,dirname,agentid);
+  //sprintf(fname,"%s/CodedGenomeAgent%.10d",dirname,agentid);
   f=fopen(fname,"w");
   for(it=G->ChromBBList->begin();it!=G->ChromBBList->end();it++)
     {
