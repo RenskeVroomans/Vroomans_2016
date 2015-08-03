@@ -774,8 +774,8 @@ void Population::ReadAncestorsFromFile(char *fname)
   char fulfname[800];
   int intdummy;
 
-  sprintf(fulfname,"%s/%s",despath,fname);
-  f=fopen(fulfname,"r");
+  //sprintf(fulfname,"%s/%s",despath,fname);
+  f=fopen(fname,"r");
   while(fscanf(f,"%i",&intdummy)!=EOF)
     {
       popancestry.push_back(intdummy);
@@ -802,8 +802,8 @@ void Population::WriteFullAncestry(Agent *C)//RERUN
 	  fprintf(f,"%i %i %i %i %f %i %i %i\n",C->agentid,C->tbirth,C->nrbands,C->nrlongbands,C->fitness,C->G->glength_,C->G->gnrgenes_,C->G->gnrtfbs_);
 	  fclose(f);
 
-	  sprintf(fname,"full");
-	  C->WriteGenome(fname);
+	  // sprintf(fname,"full");
+	  C->WriteGenome("AncestryGenomes");
 
 	  popancestry.remove(pagidc_);
 	}

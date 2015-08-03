@@ -63,8 +63,10 @@ int main(int argc, char **argv)
 {
   int i;
   Population *P;
-  char ancestryfile[800]="PopAncestry10000";
-  char genomeinputfile[800]="CodedGenomeAgent0000268555";
+ // char ancestryfile[800]="PopAncestry10000";
+  //char genomeinputfile[800]="CodedGenomeAgent0000268555";
+  char command[800];
+  char direc[800];
 
   fillgauss();
   Start(argc,argv);
@@ -82,6 +84,7 @@ int main(int argc, char **argv)
 #endif
 #ifdef INITGENOME
   P=new Population();
+  dsfmt_init_gen_rand(&dsfmt, seedinitpop);
   (*P).InitPopulationFromGenome(genomeinputfile);
   dsfmt_init_gen_rand(&dsfmt, seedmutations);
   printf("all is initialised\n");
@@ -92,6 +95,13 @@ int main(int argc, char **argv)
 #endif
 #ifdef RERUN
   P=new Population();
+  sprintf(direc,"AncestryGenomes");
+  sprintf(command, "mkdir %s/%s",despath,direc);
+  if(system(command)==-1)
+  {
+    printf("AncestryGenomes: warning: could not make dir. Exiting...\n");
+    exit(1);
+  }
   (*P).ReadAncestorsFromFile(ancestryfile);
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
   (*P).InitPopulation();

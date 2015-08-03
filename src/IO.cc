@@ -31,6 +31,9 @@ int ReadPars(int argc, char* argv[])
   //this function actually lists the options to read from command line
   generic.add_options()
   ("help", "produce help message")
+  #ifdef RERUN
+  ("ancestryfile,a",po::value< vector <string> >()->required(),"file with the ancestor ids")
+  #endif
   ("parfile",po::value< vector <string> >(),"file with the parameters")
   ("despath,d",po::value< vector <string> >()->required(),"destination path")
   ("seedinitpop,s", po::value<int>(&seedinitpop)->default_value(503))
@@ -50,11 +53,24 @@ int ReadPars(int argc, char* argv[])
     //return 1;
     exit(1);
   }
+  
+  //convert CC string DESPATH to char *
   vector <string> vs=vm["despath"].as< vector<string> >();
   vector<char*>  vc;
   
   transform(vs.begin(), vs.end(), std::back_inserter(vc), convert);
   strcpy(despath,&vs[0][0]);
+  
+  #ifdef RERUN
+  //convert CC string to char *
+  vs.clear();
+  vc.clear();
+  vs=vm["ancestryfile"].as< vector<string> >();
+  transform(vs.begin(), vs.end(), std::back_inserter(vc), convert);
+  strcpy(ancestryfile,&vs[0][0]);
+  #endif
+  
+  
   cout <<"put files in folder: "<<&vs[0][0]<<endl;
   
   if(!(vm.count("parfile"))){

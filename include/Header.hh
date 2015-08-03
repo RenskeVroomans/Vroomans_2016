@@ -21,11 +21,11 @@ using namespace std;
 #define TRUE 1
 #define FALSE 0
 
-//#define SUMINTEGRATION
-#define MULTIPLYINTEGRATION
+#define SUMINTEGRATION
+//#define MULTIPLYINTEGRATION
 
-#define RUN
-//#define RERUN
+//#define RUN
+#define RERUN
 //#define NOANCESTRY
 //#define INITGENOME
 
@@ -41,6 +41,10 @@ using namespace std;
 
 
 extern char despath[500];
+
+#ifdef RERUN
+extern char ancestryfile[500];
+#endif
 
 /** vars that have to be constant **/
 //in Population.cc

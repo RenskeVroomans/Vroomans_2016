@@ -810,7 +810,7 @@ void Agent::DetermineFitness(int mode)
      }
      
      ///regularity check
-     int median;
+     /*int median;
      int difflengths=0;
      if(lengtharray.size()>2) //need at least 3 segments to give penalty for regularity
      {
@@ -820,8 +820,14 @@ void Agent::DetermineFitness(int mode)
        {
 	 difflengths+=(lengtharray[i]-median)*(lengtharray[i]-median);
        }
+     }*/
+     
+     double difflengths=0.;
+     for(i=0; i<nrbands-1; i++)
+     {
+       difflengths+=(double)abs(lengtharray[i]-lengtharray[i+1]);
      }
-
+     difflengths/=nrlongbands;
      
      //min nr of (long enough) segments is 1
      if(nrlongbands==0)
