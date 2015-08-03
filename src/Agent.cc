@@ -823,11 +823,16 @@ void Agent::DetermineFitness(int mode)
      }*/
      
      double difflengths=0.;
-     for(i=0; i<nrbands-1; i++)
+     if (nrlongbands>1)
      {
-       difflengths+=(double)abs(lengtharray[i]-lengtharray[i+1]);
+       for(i=0; i<nrbands-1; i++)
+       {
+	 difflengths+=(double)abs(lengtharray[i]-lengtharray[i+1]);
+       }
+       difflengths/=nrlongbands;
      }
-     difflengths/=nrlongbands;
+     else 
+       difflengths=0;
      
      //min nr of (long enough) segments is 1
      if(nrlongbands==0)

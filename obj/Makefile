@@ -11,8 +11,8 @@ THO=
 LOOP= 
 VID= 
 
-CPPFLAGS =  -Wall -O2 -march=x86-64 -mmmx -msse -msse2 -fprefetch-loop-arrays -DDSFMT_MEXP=521 -DHAVE_SSE2
-#CPPFLAGS = -g -Wall -march=x86-64  -DDSFMT_MEXP=521 #-DHAVE_SSE2
+#CPPFLAGS =  -Wall -O2 -march=x86-64 -mmmx -msse -msse2 -fprefetch-loop-arrays -DDSFMT_MEXP=521 -DHAVE_SSE2
+CPPFLAGS = -g -Wall -march=x86-64  -DDSFMT_MEXP=521 #-DHAVE_SSE2
 #CPPFLAGS = -pg -Wall -march=x86-64
 
 #LNFLAGS = -pg -Wl,-rpath,/usr/lib/gcc-4.0.2/lib:/home/khwjtuss/local/lib
