@@ -517,7 +517,8 @@ int main(int argc, char **argv)
   f3=fopen(fname3,"a");
   char it[10];
     
-  for (int i=0; i<10; i++) //develop the agent 10 times; check for robustness
+  ///develop the agent 10 times; check for robustness
+  for (int i=0; i<10; i++) 
   {
     printf("iteration %d\n",i);
     A1=new Agent();
@@ -530,8 +531,8 @@ int main(int argc, char **argv)
       A1->WriteBasicProperties(A1->agentid);
       A1->DetermineGenomeAndNetworkProperties("original");
       A1->WriteGenomeAndNetworkProperties(1);
-      A1->DetermineAttractorProperties();
-      A1->WriteAttractorProperties(A1->agentid);
+      //A1->DetermineAttractorProperties();
+      //A1->WriteAttractorProperties(A1->agentid);
       A1->DetermineLoopAndMotifProperties();
       A1->WriteLoopAndMotifProperties(A1->agentid, "original");
       A1->WriteEmbryology(iterdir);
@@ -539,9 +540,6 @@ int main(int argc, char **argv)
     A1->WriteGeneEmbryology(iterdir,i+1, SegmGeneNr); //make more pictures
     A1->WriteGeneEmbryology(iterdir,i+1, GrowGeneNr); //make more pictures
  
-    //     robustnessdata[i][0]=A1->cells.size();
-    //     robustnessdata[i][1]=A1->nrbands;
-    //     robustnessdata[i][2]=A1->nrlongbands;
     fprintf(f3, "%d %d %d %d\n", i,  A1->cells.size(), A1->nrlongbands, A1->nrbands-A1->nrlongbands); //iteration, bodysize, nrlongbands, nrshortbands
     
     //find minimum and maximum

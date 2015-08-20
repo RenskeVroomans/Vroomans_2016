@@ -823,13 +823,13 @@ void Agent::DetermineFitness(int mode)
      }*/
      
      double difflengths=0.;
-     if (nrlongbands>1)
+     if (nrlongbands>2)//do not punish the 2-stripe state for not being equal
      {
-       for(i=0; i<nrbands-1; i++)
+       for(i=0; i<nrbands-2; i++) //note that the head segment may give some issues
        {
-	 difflengths+=(double)abs(lengtharray[i]-lengtharray[i+1]);
+	 difflengths+=(double)abs(lengtharray[i]-lengtharray[i+1]);// /((lengtharray[i]+lengtharray[i+1])/2);
        }
-       difflengths/=nrlongbands;
+       //difflengths/=nrlongbands;
      }
      else 
        difflengths=0;
