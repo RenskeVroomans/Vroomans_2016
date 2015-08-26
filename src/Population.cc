@@ -403,7 +403,7 @@ void Population::WriteFieldToFile(int time)
       {
 	if(Ags[i][j]!=NULL)
 	{
-	  fprintf(f,"%i\t%i\t%i\t%f\t%f\n",i,j,Ags[i][j]->agentid,Ags[i][j]->fitness,Ags[i][j]->nrlongbands);
+	  fprintf(f,"%i\t%i\t%i\t%f\t%i\n",i,j,Ags[i][j]->agentid,Ags[i][j]->fitness,Ags[i][j]->nrlongbands);
 	  Ags[i][j]->WriteGenome(dirname);
 	}
     }
@@ -799,7 +799,7 @@ void Population::WriteFullAncestry(Agent *C)//RERUN
 	  //printf("saved \n");
 	  sprintf(fname,"%s/FullAncestry",despath);
 	  f=fopen(fname,"a");
-	  fprintf(f,"%i %i %i %i %f %i %i %i\n",C->agentid,C->tbirth,C->nrbands,C->nrlongbands,C->fitness,C->G->glength_,C->G->gnrgenes_,C->G->gnrtfbs_);
+	  fprintf(f,"%i %i %i %i %i %f %i %i %i\n",C->agentid,C->tbirth,C->nrbands,C->nrlongbands,C->cells.size(),C->fitness,C->G->glength_,C->G->gnrgenes_,C->G->gnrtfbs_);
 	  fclose(f);
 
 	  // sprintf(fname,"full");

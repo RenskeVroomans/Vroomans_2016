@@ -708,7 +708,10 @@ void Genome::PruneGenome()
       DeleteTFBS(nr);
       //printf("deleting tfbs nr %d,  nr genes left:%d, nr tfbs left:%d\n", nr,gnrgenes_,gnrtfbs_);
     }
+    AdjustGeneTypeOrderTable();
 }
+
+
 
 void Genome::RemoveSegmentationGene()
 {
@@ -764,10 +767,12 @@ void Genome::DeleteGene(int nr)
 	{
 	  if(counter==nr)
 	    {
+	      //printf("deleting gene of type %d\n", (*it)->type);
 	      //delete gene and its upfront TFBS 
 	      last=it;//gene position
 	      last++;//one further than the gene position
 	      first=FindFirstTFBSInFrontOfGene(it);//first tfbs in front of gene
+	      //printf("first tfbs is of type %d\n", (*first)->type);
 	      jj=first;
 	      while( jj != last ) 
 		{

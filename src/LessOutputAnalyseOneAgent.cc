@@ -239,17 +239,17 @@ Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minband
   Agent *Ap;
   Agent *Ap2;
   int PruneIter=200;
-
+  char name[200];
   int accepted=0, nonaccepted=0;
   
   Ap=new Agent();
   Ap->CloneAgentFromAgent(A,A->agentid,0);
-  
-  int counter=0;
-  while(counter<PruneIter)
+  int counter=1;
+    
+  while(counter<=PruneIter)
   {
     Ad=new Agent();
-    Ad->InitAgent(A->agentid,0,0);
+    Ad->InitAgent(A->agentid+counter,0,0);
     Ad->G->CloneGenome(Ap->G);
     Ad->G->PruneGenome();
     Ad->N->BuildNetwork(Ad->G);
@@ -257,8 +257,9 @@ Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minband
     Ad->DetermineFitness(1);
     //printf("new agent: %d bands, original: %d\n", Ad->nrlongbands, A->nrlongbands);
     
-    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize ||Ad->cells.size()>maxsize) //check whether pruning exceeds bounds
+    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize ||Ad->cells.size()>maxsize ) //check whether pruning exceeds bounds
     {
+      //printf("non-accepted change:\n");
       delete Ad;
       Ad=NULL;
       nonaccepted++;
@@ -267,16 +268,22 @@ Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minband
     else
     {
       delete Ap;
-      Ap=Ad;
+      Ap=NULL;
+      Ap=new Agent();
+      Ap->CloneAgentFromAgent(Ad, Ad->agentid,0);
+      delete Ad;
       Ad=NULL; 
       accepted++;
+      //printf("accepted change\n");  
+      
     }
     counter++;
   }
-  
-  //Ap->WriteEmbryology(c);
+  Ap->agentid=iteration;
+  Ap->WriteEmbryology(prunedir);
   Ap->WriteGenome(iteration);
-  Ap->WriteNetwork(iteration);
+  sprintf(name,"%d",iteration);
+  Ap->WriteNetwork(name);
   //Ap->WriteExtraSignalProfiles(c);
   Ap->WriteGeneEmbryology(prunedir, iteration, SegmGeneNr);
   Ap->WriteGeneEmbryology(prunedir,iteration, GrowGeneNr);
@@ -525,7 +532,7 @@ int main(int argc, char **argv)
     A1->CreateAgentFromFile(readpath,AgentID); //develop it anew
     if(i==0) //only print data the first time
     {
-      A1->WriteNetwork(0);    
+      A1->WriteNetwork("0");    
       //A1->WriteExtraSignalProfiles(0);
       //single file for ancestry
       A1->WriteBasicProperties(A1->agentid);
@@ -536,10 +543,11 @@ int main(int argc, char **argv)
       A1->DetermineLoopAndMotifProperties();
       A1->WriteLoopAndMotifProperties(A1->agentid, "original");
       A1->WriteEmbryology(iterdir);
+      A1->WriteGeneEmbryology(iterdir,1, 10); //make more pictures
     }
     A1->WriteGeneEmbryology(iterdir,i+1, SegmGeneNr); //make more pictures
     A1->WriteGeneEmbryology(iterdir,i+1, GrowGeneNr); //make more pictures
- 
+    
     fprintf(f3, "%d %d %d %d\n", i,  A1->cells.size(), A1->nrlongbands, A1->nrbands-A1->nrlongbands); //iteration, bodysize, nrlongbands, nrshortbands
     
     //find minimum and maximum
@@ -573,6 +581,7 @@ int main(int argc, char **argv)
   /** repeatedly prune (may be that the core depends on the order of pruning ) **/
   for(int j=1; j<=5; j++)
   {
+    printf("\npruning nr %d\n", j);
     Acore=PruneAgent(A1, j, minsize, maxsize, minbands, maxbands);
     fprintf(f3,"%i\t%i\t",Acore->G->gnrgenes_,Acore->G->gnrtfbs_);
     sprintf(it,"%d",j);

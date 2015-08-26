@@ -167,7 +167,7 @@ void WriteVertexList(Agent *A,int I)
       fclose(f1);
     }
 }
-
+/*
 Agent* PruneAgent(Agent *A,int c)
 {
   Agent *Ad;
@@ -227,7 +227,7 @@ Agent* PruneAgent(Agent *A,int c)
   printf("accepted:%d, nonaccepted: %d\n",accepted, nonaccepted);
   printf("!!!\n");
   return Ap;
-}
+}*/
 
 void WriteStripePatterns(int **array,int nrnetworks,int dsize)
 {
@@ -417,7 +417,7 @@ int main(int argc, char **argv)
 {
   char fname3[1000];
   char fname4[1000];
-  Agent *A1;
+  Agent *A1, *A2;
       
   /**read command line parameters */
   Start(argc,argv);
@@ -431,10 +431,10 @@ int main(int argc, char **argv)
   A1=new Agent();
 
   A1->CreateAgentFromFile(readpath,AgentID); //develop it anew
-  A1->WriteSegmentEmbryology(0); //make more pictures
+  A1->WriteGeneEmbryology("", 1, SegmGeneNr); //make more pictures
+  A1->WriteGeneEmbryology("",1, 10);
   A1->WriteEmbryology("");
   A1->WriteVideo(genenr);    
   A1->WriteExtraSignalProfiles(0);
-
-  
+   
 }

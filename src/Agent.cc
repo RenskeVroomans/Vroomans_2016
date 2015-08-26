@@ -657,7 +657,9 @@ void Agent::DetermineFitness(int mode)
   list<Cell>::iterator iter, forw,ext;
   
   if((G->CheckViability())!=TRUE && !mode)
+  {
     fitness=-1;
+  }
   else
   {  
     /// //count the boundaries of segments (where segmentation gene goes up or down)

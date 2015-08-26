@@ -352,7 +352,7 @@ void Agent::WriteGenome(int c)
   fclose(f);
 }
 
-void Agent::WriteNetwork(int c)
+void Agent::WriteNetwork(char *c)
 {
   FILE *f;
   char fname[800];
@@ -373,10 +373,7 @@ void Agent::WriteNetwork(int c)
   VL=(*N).VL;
   AL=(*N).AL;
  
-  if(c==0)
-    sprintf(fname,"%s/NetworkAgent%.10d%s.dot",despath,agentid,"original");
-  else
-    sprintf(fname,"%s/NetworkAgent%.10d_%d.dot",despath,agentid,c);
+  sprintf(fname,"%s/NetworkAgent%.10d_%s.dot",despath,agentid,c);
   
   f=fopen(fname,"w");
   fprintf(f,"digraph network_%i {\n",agentid);

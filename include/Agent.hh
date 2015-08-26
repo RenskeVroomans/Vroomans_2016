@@ -86,7 +86,7 @@ class Agent
   int DifferentEquilibrium(double p1[NrGeneTypes],double p2[NrGeneTypes]);
   int CompareAgents(Agent *A, int c);
   void WriteGenome(int c);
-  void WriteNetwork(int c);
+  void WriteNetwork(char* c);
   void WriteNetworkProgression(int c, char* destdir, int cell);
   //void WriteMovieEmbryology();
   void WriteGeneEmbryology(char *subdir, int c, int gene);
