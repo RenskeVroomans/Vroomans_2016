@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 #ifdef INITGENOME
   P=new Population();
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
-  (*P).InitPopulationFromGenome(genomeinputfile);
+  (*P).InitPopulationFromGenome(genomefile);
   dsfmt_init_gen_rand(&dsfmt, seedmutations);
   printf("all is initialised\n");
   (*P).WritePopFitnessToFile(0);
@@ -145,6 +145,24 @@ int main(int argc, char **argv)
 	(*P).WriteFieldToFile(i);
       }
 #endif
+#ifdef INITGENOME
+      if(i%25==0)
+	{
+	  (*P).WritePopFitnessToFile(i);
+	  (*P).WriteGenomeLengthToFile(i);
+	  (*P).WriteBandsToFile(i);
+	}
+      if(i%100==0)
+	{
+	  (*P).WriteFittestMatricesToFile(i);
+	}
+      if(i%1000==0)
+      {
+	(*P).WriteAncestriesToFile(i);
+	(*P).WriteFieldToFile(i);
+      }
+#endif
+
 #ifdef RERUN
       if(i%10==0)
 	(*P).WriteBandsToFile(i);

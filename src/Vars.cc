@@ -7,6 +7,11 @@ char despath[500];
 #ifdef RERUN
 char ancestryfile[500];
 #endif
+
+#ifdef INITGENOME
+char genomefile[500];
+#endif
+
 //in Population.cc
 int InitNrAg=1; //50;
 double deathrate=0.5;

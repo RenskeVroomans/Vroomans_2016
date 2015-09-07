@@ -47,6 +47,10 @@ extern char despath[500];
 extern char ancestryfile[500];
 #endif
 
+#ifdef INITGENOME
+extern char genomefile[500];
+#endif
+
 /** vars that have to be constant **/
 //in Population.cc
 const int NI=30;
