@@ -352,145 +352,14 @@ void Agent::WriteGenome(int c)
   fclose(f);
 }
 
-void Agent::WriteNetwork(char *c)
+int mapEE(double EE)
 {
-  FILE *f;
-  char fname[800];
-  list<Vertex *> *VL;
-  list<list <Edge *> > *AL;
-  Edge *E;
-  Vertex *V;
-  Network::iterv iv;
-  Network::iterel el;
-  Network::itere e;
-  int nodelabelin;
-  int nodelabelout;
-  Gene *gene;
-  int weight;
-  char ss[200];
-    
-
-  VL=(*N).VL;
-  AL=(*N).AL;
- 
-  sprintf(fname,"%s/NetworkAgent%.10d_%s.dot",despath,agentid,c);
+  int val;
   
-  f=fopen(fname,"w");
-  fprintf(f,"digraph network_%i {\n",agentid);
-  fprintf(f,"size=\"10,10\";\n");
-  fprintf(f,"overlap=false; \n");
-  fprintf(f,"splines=true; \n");
   
-  iv=VL->begin();
-  for(el=AL->begin();el!=AL->end();el++)
-    {
-      V=(*iv);
-      nodelabelin=(*V).label;
-      gene=(*V).Gen;
-      if(gene->type==0)
-	{
-	  sprintf(ss,"5,0");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==1)
-	{ 
-	  sprintf(ss,"1,2");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==2)
-	{ 
-	  sprintf(ss,"3,2");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==3)
-	{ 
-	  sprintf(ss,"5,2");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==4)
-	{ 
-	  sprintf(ss,"7,2");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==5)
-	{ 
-	  sprintf(ss,"9,2");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==6)
-	{ 
-	  sprintf(ss,"1,4");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==7)
-	{ 
-	  sprintf(ss,"3,4");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==8)
-	{ 
-	  sprintf(ss,"5,4");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==9)
-	{ 
-	  sprintf(ss,"7,4");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==10)
-	{ 
-	  sprintf(ss,"9,4");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==11)
-	{ 
-	  sprintf(ss,"1,6");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==12)
-	{ 
-	  sprintf(ss,"3,6");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==13)
-	{ 
-	  sprintf(ss,"5,6");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==14)
-	{ 
-	  sprintf(ss,"7,6");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else if(gene->type==15)
-	{ 
-	  sprintf(ss,"9,6");
-	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ss);
-	}
-      else
-	fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold];\n",nodelabelin,(*gene).type);
-      for(e=el->begin();e!=el->end();e++)
-	{
-	  E=(*e);
-	  V=(*E).V;
-	  nodelabelout=(*V).label;
-	  weight=(*E).weight;
-	  if(weight==1)
-	    {
-	      fprintf(f,"\"%i\" -> \"%i\" [color=green,penwidth=3];\n",nodelabelout,nodelabelin);
-	      
-	    }
-	  else if(weight==-1)
-	    {
-	      fprintf(f,"\"%i\" -> \"%i\" [color=red,penwidth=3];\n",nodelabelout,nodelabelin);	
-	    }
-	}
-      iv++;
-    }
-  fprintf(f,"}\n");
-  fclose(f);
+  
+  return val;
 }
-
 static string NumToHex(int val)
 {
   char hex[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
@@ -515,26 +384,237 @@ static string NumToHex(int val)
   return string(reverse);
 }
 
-static string ExprToHexColor(int val, int maxval)
+static string ExprToHexColor(double val, double minval, double maxval, int code)
 {
   int R,G,B;
-  
-  double conval=((double)val/(double)maxval)*255.;
-  if(conval<maxval){
-    R=(int)max(255.-conval*0.5,0.);//R
-    G=(int)max(255.-conval*1.5,0.);//G
-    B=(int)max(255.-conval*3.,0.);//B 
-  }
-  else{
-    R=125;
-    G=0;
-    B=0;
-  }
   string RGB;
-  RGB=NumToHex(R)+NumToHex(G)+NumToHex(B);
+  double minsize, maxsize,nval;
+  ostringstream strs;
   
+  double conval=((val-minval)/(maxval-minval))*255.;
+  switch (code){
+    case 1: //expression
+      if(conval<maxval){
+	R=(int)max(255.-conval*0.5,0.);//R
+	G=(int)max(255.-conval*1.5,0.);//G
+	B=(int)max(255.-conval*3.,0.);//B 
+      }
+      else{
+	R=125;
+	G=0;
+	B=0;
+      }
+      RGB=NumToHex(R)+NumToHex(G)+NumToHex(B);
+      break;
+    case 2: //DD value of a gene to color
+      R=(int)max(255.-conval,0.);
+      G=(int)max(255.-conval,0.);
+      B=255;
+      RGB=NumToHex(R)+NumToHex(G)+NumToHex(B);
+      break;
+    case 3: //EE value of a gene to font size
+      minsize=8.; 
+      maxsize=24.;
+      conval/=255.;
+      nval=minsize+conval*(maxsize-minsize);
+      strs <<nval;
+      RGB=strs.str();
+      break;
+    case 4://HH value of a TFBS to an edge thickness
+      minsize=0.5;
+      maxsize=5.;
+      conval/=255.;
+      nval=minsize+conval*(maxsize-minsize);
+      strs <<nval;
+      RGB=strs.str();
+      break;
+    default:
+      printf("ExprToHexColor: error: wrong code\n");
+      break;
+      
+  }
   return RGB;
 }
+
+void Agent::WriteNetwork(char *c)
+{
+  FILE *f;
+  char fname[800];
+  list<Vertex *> *VL;
+  list<list <Edge *> > *AL;
+  Edge *E;
+  Vertex *V;
+  Network::iterv iv;
+  Network::iterel el;
+  Network::itere e;
+  int nodelabelin;
+  int nodelabelout;
+  Gene *gene;
+  int weight;
+  char ss[200];
+  string ee;
+  string dd;
+  string hh;
+  VL=(*N).VL;
+  AL=(*N).AL;
+ 
+  sprintf(fname,"%s/NetworkAgent%.10d_%s.dot",despath,agentid,c);
+  
+  f=fopen(fname,"w");
+  fprintf(f,"digraph network_%i {\n",agentid);
+  fprintf(f,"size=\"10,10\";\n");
+  fprintf(f,"overlap=false; \n");
+  fprintf(f,"splines=true; \n");
+  
+  iv=VL->begin();
+  for(el=AL->begin();el!=AL->end();el++)
+    {
+      V=(*iv);
+      nodelabelin=(*V).label;
+      gene=(*V).Gen;
+      if(gene->type==0)
+	{
+	  sprintf(ss,"5,0");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==1)
+	{ 
+	  sprintf(ss,"1,2");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==2)
+	{ 
+	  sprintf(ss,"3,2");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==3)
+	{ 
+	  sprintf(ss,"5,2");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==4)
+	{ 
+	  sprintf(ss,"7,2");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+}
+      else if(gene->type==5)
+	{ 
+	  sprintf(ss,"9,2");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==6)
+	{ 
+	  sprintf(ss,"1,4");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==7)
+	{ 
+	  sprintf(ss,"3,4");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==8)
+	{ 
+	  sprintf(ss,"5,4");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==9)
+	{ 
+	  sprintf(ss,"7,4");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==10)
+	{ 
+	  sprintf(ss,"9,4");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==11)
+	{ 
+	  sprintf(ss,"1,6");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==12)
+	{ 
+	  sprintf(ss,"3,6");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==13)
+	{ 
+	  sprintf(ss,"5,6");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==14)
+	{ 
+	  sprintf(ss,"7,6");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else if(gene->type==15)
+	{ 
+	  sprintf(ss,"9,6");
+	  ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	  dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	  fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\", pos=\"%s\",pin=true];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str(), ss);
+	}
+      else
+      {
+	ee=ExprToHexColor(gene->EE, Emin, Emax,3);
+	dd=ExprToHexColor(gene->DD, Dmin, Dmax,2);
+	fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,fontsize=%s, style=filled, fillcolor=\"#%s\"];\n",nodelabelin,(*gene).type,ee.c_str(),dd.c_str());
+      }
+      for(e=el->begin();e!=el->end();e++)
+	{
+	  E=(*e);
+	  V=(*E).V;
+	  nodelabelout=(*V).label;
+	  weight=(*E).weight;
+	  hh=ExprToHexColor((*E).HH,Hmin,Hmax, 4);
+	  if(weight==1)
+	    {
+	      fprintf(f,"\"%i\" -> \"%i\" [color=green,penwidth=%s];\n",nodelabelout,nodelabelin,hh.c_str());
+	      
+	    }
+	  else if(weight==-1)
+	    {
+	      fprintf(f,"\"%i\" -> \"%i\" [color=red,penwidth=%s];\n",nodelabelout,nodelabelin,hh.c_str());	
+	    }
+	}
+      iv++;
+    }
+  fprintf(f,"}\n");
+  fclose(f);
+}
+
+
+
 
 void Agent::WriteNetworkProgression(int c, char* destdir, int cell)
 {
@@ -616,7 +696,7 @@ void Agent::WriteNetworkProgression(int c, char* destdir, int cell)
       gene=(*V).Gen;
       if(gene->type==0)
       {
-	expr=ExprToHexColor(cellpattern[i][cell/10][gene->type],300);
+	expr=ExprToHexColor((double)cellpattern[i][cell/10][gene->type],0.,Emax/Dmin,1);
 	sprintf(ss,"5,0");
 	fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true, style=filled, fillcolor=\"#%s\"];\n",nodelabelin,(*gene).type,ss,expr.c_str());
       }
@@ -625,7 +705,7 @@ void Agent::WriteNetworkProgression(int c, char* destdir, int cell)
 	xx=((gene->type-1)%5)+1;
 	yy=(gene->type/5)*2+2;
 	sprintf(ss,"%d,%d",xx+xx-1,yy);
-	expr=ExprToHexColor(cellpattern[i][cell/10][gene->type],300);
+	expr=ExprToHexColor((double)cellpattern[i][cell/10][gene->type],0.,Emax/Dmin,1);
 	fprintf(f,"\"%i\" [label=\"%i\",shape=ellipse,color=black,style=bold,pos=\"%s\",pin=true, style=filled, fillcolor=\"#%s\"];\n",nodelabelin,(*gene).type,ss,expr.c_str());
       }      
       else
@@ -914,7 +994,330 @@ void Agent::WriteMovieEmbryology()
   
 }
 */
+static int AgeToColor(int minage,int maxage, int age)
+{
+  int color;
   
+  if(age<0)
+    return -1;
+  
+  color=(int)((double)(age-minage)/(double)(maxage-minage)*255.);
+ 
+  if(color>255)
+    color=255;
+  
+  
+  return color;
+}
+  
+void Agent::WriteFullAgeProfile(char *dirname,int c)
+{
+  int i,j;
+  int ii,jj;
+  FILE *PNGFileP;  
+  png_structp png_ptr;
+  png_infop info_ptr;
+  png_bytep row_pointer;
+  char fname[500];
+  const int zoom=4;
+  const int WW=zoom*NrFinalCells;
+  const int LL=zoom*NrStorages;
+  int celltypes[LL][WW];
+  unsigned char RGBdata[LL*WW*3];
+  // int type;
+  int color;
+  
+  
+    for(i=0;i<NrStorages;i++)
+  {
+    for(j=0;j<NrFinalCells;j++)
+    {
+      color=AgeToColor(0,NrDevSteps,ages[i][j]);
+      for(ii=0;ii<zoom;ii++)
+	for(jj=0;jj<zoom;jj++)
+	  celltypes[zoom*i+ii][zoom*j+jj]=color;
+    }
+  }
+
+  for(i=0;i<LL;i++)
+    for(j=0;j<WW;j++)
+    {
+      if(celltypes[i][j]>=0) //graded coloring of cell age
+      {
+	RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+      }
+      
+      else //non-tissue part
+      {
+	RGBdata[i*WW*3+j*3+0]=127;
+	RGBdata[i*WW*3+j*3+1]=127;
+	RGBdata[i*WW*3+j*3+2]=127;
+	
+      }
+    }
+
+  sprintf(fname,"%s/%s/Age%.10d_%d.png",despath,dirname,agentid, c);
+  PNGFileP = fopen(fname, "wb");
+
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,(png_voidp) NULL,
+				    (png_error_ptr) NULL, 
+				    (png_error_ptr) NULL );
+  if(!png_ptr)
+    {
+      printf("out of memory\n");
+      exit(1);
+    }
+  info_ptr = png_create_info_struct ( png_ptr );
+  if(!info_ptr)
+    {
+      png_destroy_write_struct(&png_ptr, NULL);
+      printf("out of memory\n");
+      exit(1);
+    }
+  png_init_io ( png_ptr, PNGFileP );
+  png_set_IHDR(png_ptr, info_ptr,WW,LL,
+	       8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+	       PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+//   // write header
+  png_write_info ( png_ptr, info_ptr );
+  // write out image, one row at a time 
+  int row;
+  for ( row = 0; row <LL; row++ ) 
+    {
+      row_pointer = ( RGBdata + WW * row * 3 );
+      png_write_rows ( png_ptr, &row_pointer, 1 );
+    }
+  // flush all info to file 
+  png_write_end ( png_ptr, info_ptr );
+  fflush ( PNGFileP );
+  png_destroy_write_struct ( &png_ptr,&info_ptr);
+  fclose(PNGFileP);
+}
+
+void Agent::WriteTimepointAgeProfile(char *dirname, int c, int timepoint)
+{
+  int i,j;
+  int ii,jj;
+  FILE *PNGFileP;  
+  png_structp png_ptr;
+  png_infop info_ptr;
+  png_bytep row_pointer;
+  char fname[500];
+  const int zoom=4;
+  const int WW=zoom*NrFinalCells;
+  const int LL=zoom*4;
+  int celltypes[LL][WW];
+  unsigned char RGBdata[LL*WW*3];
+  // int type;
+  int color;
+  int minage=1000;
+  int maxage=0;
+  
+ // printf("timepoint %d, ages:\n", timepoint);
+  
+  for(j=0;j<NrFinalCells;j++)
+  {
+    //printf("%d ",ages[timepoint][j]);
+    if(ages[timepoint][j]<minage && ages[timepoint][j]>=0)
+      minage=ages[timepoint][j];
+    if(ages[timepoint][j]>maxage)
+      maxage=ages[timepoint][j];
+  }
+ // printf("\n\n");
+ // printf("minage: %d, maxage=%d\n",minage, maxage);
+   
+  
+  for(i=0;i<4;i++)
+  {
+    for(j=0;j<NrFinalCells;j++)
+    {
+      color=AgeToColor(minage,maxage, ages[timepoint][j]);
+      for(ii=0;ii<zoom;ii++)
+	for(jj=0;jj<zoom;jj++)
+	  celltypes[zoom*i+ii][zoom*j+jj]=color;
+    }
+  }
+
+  for(i=0;i<LL;i++)
+    for(j=0;j<WW;j++)
+    {
+      if(celltypes[i][j]>=0) //graded coloring of cell age
+      {
+	RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+      }
+      
+      else //non-tissue part
+      {
+	RGBdata[i*WW*3+j*3+0]=127;
+	RGBdata[i*WW*3+j*3+1]=127;
+	RGBdata[i*WW*3+j*3+2]=127;
+	
+      }
+    }
+
+  sprintf(fname,"%s/%s/AgeAt%d_%.10d_%d.png",despath,dirname,timepoint, agentid, c);
+  PNGFileP = fopen(fname, "wb");
+
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,(png_voidp) NULL,
+				    (png_error_ptr) NULL, 
+				    (png_error_ptr) NULL );
+  if(!png_ptr)
+    {
+      printf("out of memory\n");
+      exit(1);
+    }
+  info_ptr = png_create_info_struct ( png_ptr );
+  if(!info_ptr)
+    {
+      png_destroy_write_struct(&png_ptr, NULL);
+      printf("out of memory\n");
+      exit(1);
+    }
+  png_init_io ( png_ptr, PNGFileP );
+  png_set_IHDR(png_ptr, info_ptr,WW,LL,
+	       8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+	       PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+//   // write header
+  png_write_info ( png_ptr, info_ptr );
+  // write out image, one row at a time 
+  int row;
+  for ( row = 0; row <LL; row++ ) 
+    {
+      row_pointer = ( RGBdata + WW * row * 3 );
+      png_write_rows ( png_ptr, &row_pointer, 1 );
+    }
+  // flush all info to file 
+  png_write_end ( png_ptr, info_ptr );
+  fflush ( PNGFileP );
+  png_destroy_write_struct ( &png_ptr,&info_ptr);
+  fclose(PNGFileP);
+}
+
+static int typecolormap[18][3]=
+{  {255, 0, 0},//red 0
+   {0, 255, 0},//green 1 
+   {0, 0, 255},//blue 2
+   {255, 153, 51}, //orange 3(not the 'perfect' orange but 1 shade lighter for better distinction)
+   {0, 255, 255},//cyan 4
+   {255, 0, 255},//magenta 5
+   {255, 255, 0}, //yellow 6
+   {153, 51, 255}, //purple 7 (same as orange)
+   {205,92,92}, //indian red 8
+   {0, 128, 0}, //darkgreen 9
+   {218,165,32}, //goldenrod 10
+   {65,105,225}, //royalblue, 11
+   {139,0,0}, //dark red 12
+   {102,205,170}, //medium aquamarine 13
+   {210,105,30}, //chocolate 14
+   {147,112,219}, //light purple 15
+   {255, 255, 255}, //white 16
+   {0, 0, 0}//black 17
+  };
+  
+void Agent::WriteCloneProfile(char *dirname, int c, int timepoint)
+{
+  int i,j;
+  int ii,jj;
+  FILE *PNGFileP;  
+  png_structp png_ptr;
+  png_infop info_ptr;
+  png_bytep row_pointer;
+  char fname[500];
+  const int zoom=4;
+  const int WW=zoom*NrFinalCells;
+  const int LL=zoom*NrStorages;
+  int celltypes[LL][WW];
+  unsigned char RGBdata[LL*WW*3];
+  // int type;
+  int color;
+  int nrcells1=0, nrcells2=0;
+  
+  //the crucial time points are the second and third; min age at any consecutive time point is at least timepoint-2 or
+
+ int counter;
+  for(i=0;i<NrStorages;i++)
+  {
+    counter=-1;
+    for(j=0;j<NrFinalCells;j++)
+    {
+      if(ages[i][j]<0) //not a cell
+	color=-1;
+      else if(i<timepoint)//before the interesting point, all cells are black
+	color=17;
+      else if((ages[i][j]/StorageInt)>=i-timepoint && j>=InitNrCells-1)//switch colour if we have an original cell, don't count head.
+      {
+	counter++;
+	color=counter%18;
+      }
+      else
+	color=counter%18;
+	
+      for(ii=0;ii<zoom;ii++)
+	for(jj=0;jj<zoom;jj++)
+	  celltypes[zoom*i+ii][zoom*j+jj]=color;
+    }
+  }
+
+  for(i=0;i<LL;i++)
+    for(j=0;j<WW;j++)
+    {
+      if(celltypes[i][j]>=0) //graded coloring of cell age
+      {
+	RGBdata[i*WW*3+j*3+0]=typecolormap[celltypes[i][j]][0];
+	RGBdata[i*WW*3+j*3+1]=typecolormap[celltypes[i][j]][1];
+	RGBdata[i*WW*3+j*3+2]=typecolormap[celltypes[i][j]][2];
+      }
+      
+      else //non-tissue part
+      {
+	RGBdata[i*WW*3+j*3+0]=127;
+	RGBdata[i*WW*3+j*3+1]=127;
+	RGBdata[i*WW*3+j*3+2]=127;
+	
+      }
+    }
+
+  sprintf(fname,"%s/%s/ClonesPoint%d_%.10d_%d.png",despath,dirname,timepoint,agentid, c);
+  PNGFileP = fopen(fname, "wb");
+
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,(png_voidp) NULL,
+				    (png_error_ptr) NULL, 
+				    (png_error_ptr) NULL );
+  if(!png_ptr)
+    {
+      printf("out of memory\n");
+      exit(1);
+    }
+  info_ptr = png_create_info_struct ( png_ptr );
+  if(!info_ptr)
+    {
+      png_destroy_write_struct(&png_ptr, NULL);
+      printf("out of memory\n");
+      exit(1);
+    }
+  png_init_io ( png_ptr, PNGFileP );
+  png_set_IHDR(png_ptr, info_ptr,WW,LL,
+	       8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+	       PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+//   // write header
+  png_write_info ( png_ptr, info_ptr );
+  // write out image, one row at a time 
+  int row;
+  for ( row = 0; row <LL; row++ ) 
+    {
+      row_pointer = ( RGBdata + WW * row * 3 );
+      png_write_rows ( png_ptr, &row_pointer, 1 );
+    }
+  // flush all info to file 
+  png_write_end ( png_ptr, info_ptr );
+  fflush ( PNGFileP );
+  png_destroy_write_struct ( &png_ptr,&info_ptr);
+  fclose(PNGFileP);
+}
 
 void Agent::WriteGeneEmbryology(char *subdir, int c, int gene)
 {

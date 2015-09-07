@@ -16,6 +16,7 @@ using namespace std;
 #include <algorithm>
 #include <boost/utility.hpp>
 #include <cstring>
+#include <sstream>
 #include "dSFMT.h"
 
 #define TRUE 1

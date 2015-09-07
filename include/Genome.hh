@@ -44,6 +44,8 @@ class Genome
   void PruneGenome();
   void DeleteGene(int nr);
   void DeleteTFBS(int nr);
+  void RemoveDisconnectedGenes();
+  int GeneIsInGenome(int type);
 };
 #endif
 

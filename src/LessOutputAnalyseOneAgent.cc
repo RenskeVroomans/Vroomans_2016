@@ -238,12 +238,13 @@ Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minband
   Agent *Ad;
   Agent *Ap;
   Agent *Ap2;
-  int PruneIter=200;
+  int PruneIter=500;
   char name[200];
   int accepted=0, nonaccepted=0;
   
   Ap=new Agent();
   Ap->CloneAgentFromAgent(A,A->agentid,0);
+  Ap->G->RemoveDisconnectedGenes();
   int counter=1;
     
   while(counter<=PruneIter)
@@ -279,6 +280,8 @@ Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minband
     }
     counter++;
   }
+  Ap->G->RemoveDisconnectedGenes(); 
+  Ap->N->BuildNetwork(Ap->G);
   Ap->agentid=iteration;
   Ap->WriteEmbryology(prunedir);
   Ap->WriteGenome(iteration);
@@ -543,11 +546,17 @@ int main(int argc, char **argv)
       A1->DetermineLoopAndMotifProperties();
       A1->WriteLoopAndMotifProperties(A1->agentid, "original");
       A1->WriteEmbryology(iterdir);
+      A1->WriteDivisionProfile(iterdir);
       A1->WriteGeneEmbryology(iterdir,1, 10); //make more pictures
     }
     A1->WriteGeneEmbryology(iterdir,i+1, SegmGeneNr); //make more pictures
     A1->WriteGeneEmbryology(iterdir,i+1, GrowGeneNr); //make more pictures
-    
+    A1->WriteFullAgeProfile(iterdir,i+1);
+    A1->WriteTimepointAgeProfile(iterdir,i+1, NrStorages-1);
+    A1->WriteTimepointAgeProfile(iterdir,i+1, 1);
+    A1->WriteTimepointAgeProfile(iterdir,i+1, 2);
+    A1->WriteCloneProfile(iterdir, i+1,1);
+    A1->WriteCloneProfile(iterdir, i+1,2);
     fprintf(f3, "%d %d %d %d\n", i,  A1->cells.size(), A1->nrlongbands, A1->nrbands-A1->nrlongbands); //iteration, bodysize, nrlongbands, nrshortbands
     
     //find minimum and maximum
@@ -573,16 +582,20 @@ int main(int argc, char **argv)
   sprintf(fname3,"%s/%s",writepath,"GeneTFBSConnectionNumbers");
   f3=fopen(fname3,"a");
   
+  
   /** original **/
   fprintf(f3,"%i\t",A1->agentid); //1
   fprintf(f3,"%i\t%i\t",A1->G->gnrgenes_,A1->G->gnrtfbs_);//2, 3 
   
 
   /** repeatedly prune (may be that the core depends on the order of pruning ) **/
-  for(int j=1; j<=5; j++)
+  for(int j=1; j<=10; j++)
   {
     printf("\npruning nr %d\n", j);
-    Acore=PruneAgent(A1, j, minsize, maxsize, minbands, maxbands);
+    if(j<=5)
+      Acore=PruneAgent(A1, j, minsize, maxsize, minbands, maxbands);
+    else
+      Acore=PruneAgent(A1, j, minsize, maxsize, maxbands-1, maxbands);
     fprintf(f3,"%i\t%i\t",Acore->G->gnrgenes_,Acore->G->gnrtfbs_);
     sprintf(it,"%d",j);
     Acore->DetermineLoopAndMotifProperties();

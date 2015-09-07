@@ -89,6 +89,9 @@ class Agent
   void WriteNetwork(char* c);
   void WriteNetworkProgression(int c, char* destdir, int cell);
   //void WriteMovieEmbryology();
+  void WriteFullAgeProfile(char *subdir, int c);
+  void WriteTimepointAgeProfile(char *subdir, int c, int timepoint);
+  void WriteCloneProfile(char *dirname, int c, int timepoint);
   void WriteGeneEmbryology(char *subdir, int c, int gene);
   void WriteVideo(int gene);
   void WriteVideoPicture(int gene, int time, int max);

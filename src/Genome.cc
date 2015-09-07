@@ -820,3 +820,60 @@ void Genome::DeleteTFBS(int nr)
       it++;
     }
 }
+
+int Genome::GeneIsInGenome(int type)
+{
+  iter it;
+  int flag=0;
+  
+  it=ChromBBList->begin();
+  while(it!=ChromBBList->end())
+  {
+    if(IsGene(*it) && (*it)->type==type)
+    {
+      flag=1;
+      break;
+    }
+    ++it;
+  }
+  return flag;
+    
+}
+
+void Genome::RemoveDisconnectedGenes()
+{
+  iter it, next;
+  int counter=0,flag=0;
+  
+  it=ChromBBList->begin();
+  while(it!=ChromBBList->end())
+  {
+    if(IsTFBS(*it) && GeneIsInGenome((*it)->type))
+    {
+      flag=0;
+    }
+    else if (IsTFBS(*it) && !GeneIsInGenome((*it)->type))
+    {
+      next=it;
+      ++next;
+      delete (*it);
+      gnrtfbs_--;
+      it=(*ChromBBList).erase(it,next);
+      continue;
+    }
+    if(IsGene(*it))
+    {
+      flag++;
+      if(flag>1 && (*it)->type>0)
+      {
+	next=it;
+	++next;
+	delete (*it);
+	gnrgenes_--;
+	it=(*ChromBBList).erase(it,next);
+	continue;
+      }
+    }
+    ++it;
+  }
+}

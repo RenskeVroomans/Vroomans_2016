@@ -195,6 +195,7 @@ int main(int argc, char **argv)
   Agent *A1;
   vector<Cell> C1, C2;
   vector< vector< vector<double> > > proteins, proteins2; //cell,  time, genes: stores time data (a cell doesn't do that)
+  vector< vector <int> >divided;
   double **data;
   double **data2;
   
@@ -216,48 +217,30 @@ int main(int argc, char **argv)
   /** start building the Agent, print basic info for good measure */
   A1=new Agent();
   A1->CreateAgentFromFile(genomefile,0); //easier than building the genome and network separately, have access to agent functions too
-  A1->WriteSegmentEmbryology(0); //make more pictures
-  /*A1->WriteBasicProperties(A1->agentid);
-  A1->DetermineGenomeAndNetworkProperties();
-  A1->WriteGenomeAndNetworkProperties(A1->agentid);
-  A1->DetermineAttractorProperties();
-  A1->WriteAttractorProperties(A1->agentid);
-  A1->DetermineLoopAndMotifProperties();
-  A1->WriteLoopAndMotifProperties(A1->agentid);
-  
-  A1->WriteNetworkProgression(0,extrapath,0);
-  A1->WriteNetworkProgression(0,extrapath,10);   these functions just print the same as basic analysis, just clutter the directory*/
-    
   
   /** Cells set 1: constant morphogen concentration, list with different concentrations **/
   /* initialize the cell list with artificial morphogens */
  
-  for(int i=0; i<FIXCELLS; i++)
-  {
-    Cell c(i);
-    c.SetCellState();
-    c.proteinstates[0]=(double)(FIXCELLS-i)*100./(double)FIXCELLS;
-    C1.push_back(c);
-  }
+  Cell c(0);
+  c.SetCellState(A1->G);
+  c.proteinstates[0]=100.;
+  C1.push_back(c);
+  Cell c2(1);
+  c2.SetCellState(A1->G);
+  c2.proteinstates[0]=0.;
+  C1.push_back(c);
   
   /* run the network */
    //open new file for data printing
    sprintf(fname2,"%s/DataFixedCells.dat",despath);
    f2=fopen(fname2,"w");
    
-  for (int j=0;j<FIXCELLS;j++) //per cell, we run the network for the full duration
+  for (int j=0;j<2;j++) //per cell, we run the network for the full duration
   {
     proteins.push_back(vector < vector <double > >()); //add a vector for this cell
     
         
-    //set new cell to last state of previous cell
-    if(j>0){
-      for(int m=1;m<NrGeneTypes;m++) 
-     	{
-	  C1[j].proteinstates[m]=proteins[j-1][NrDevSteps-1][m];
-      	}
-    }
-     /* run network for the cell */
+    /* run network for the cell */
     for(int i=0; i<NrDevSteps+EXTRATIME; i++)
     {
       proteins[j].push_back(vector <double>()); //add a vector of genes for this time point
@@ -274,34 +257,37 @@ int main(int argc, char **argv)
     fprintf(f2,"\n\n");
   }
   fclose(f2);
+  
   /** ***************************** **/
-  /** Cells set 2: decaying morphogen, different starting points **/
+  /** Cells set 2: decaying morphogen, different times of division; for simultaneous **/
   /* initialize cell list with different starting points and decaying morphogens */
   sprintf(fname2,"%s/DataDecayingCells.dat",despath);
   f2=fopen(fname2,"w");
   for(int i=0; i<DECCELLS; i++)
   {
     Cell c(i);
-    c.SetCellState();
-    
-    //set cell to one of the states of the cell with max morphogen concentration
-    for(int m=0;m<NrGeneTypes;m++) 
-    {
-      c.proteinstates[m]=proteins[0][100+i*4][m];
-    }
+    c.SetCellState(A1->G);
+    c.proteinstates[0]=100.;
     C2.push_back(c);
   }
   
-   /* run the network for the decaying cells */
+   /** run the network for the decaying cells */
   for (int j=0;j<DECCELLS;j++) //per cell, we run the network for the full duration
   {
-    proteins2.push_back(vector < vector <double > >());
+    proteins2.push_back(vector < vector <double > >());//proteins vector for this cell
+    divided.push_back(vector<int>());
     
     for(int i=0; i<NrDevSteps; i++)
     {
       proteins2[j].push_back(vector <double>()); //add a vector of genes for this time point
       
       C2[j].UpdateCellState(A1->N);
+      if((i==j || (i>j && uniform()<0.975)) && C2[j].proteinstates[GrowGeneNr]>ThOn) //simulate cell division by halving the concentration
+      {
+	C2[j].proteinstates[GrowGeneNr]*=0.5;
+	divided[j].push_back(i);
+      }
+      
       fprintf(f2,"%d\t", i);
       //update morphogen concentration
       C2[j].proteinstates[0]-=HT*morphdecay*C2[j].proteinstates[0];
@@ -316,49 +302,24 @@ int main(int argc, char **argv)
   }
   fclose(f2);
    
-  /** print those cells that end up with high seg gene conc, and check when they reach equilibrium **/
+  /** print whether cells end up with high seg gene conc, and check when they divided **/
   sprintf(fname2,"%s/HighCells.dat",despath);
   f2=fopen(fname2,"w");
-  deque<int> success;
-  int SSstep=0;//the timestep at which the simulations reach steady state
-  int count=0;
-  //printf("High cells: ");
-  for (int i=0;i<50; i++)
+  
+  vector<int>::iterator it;
+  
+  for (int i=0;i<DECCELLS; i++)
   {
-    if(proteins2[i][NrDevSteps-1][SegmGeneNr]-ThOn>-0.00001){
-      success.push_back(i);
-      fprintf(f2,"%d\n",i);//print the cells with high concentration
-      while((proteins2[i][NrDevSteps-1][SegmGeneNr]-proteins2[i][NrDevSteps-1-count][SegmGeneNr])*
-	(proteins2[i][NrDevSteps-1][SegmGeneNr]-proteins2[i][NrDevSteps-1-count][SegmGeneNr])<2. && count <NrDevSteps-1)
-	count++;
-      
-      if(NrDevSteps-count>2)
-	SSstep+=NrDevSteps-count;
-      else
-	success.pop_back();
-      
-      count=0;
-    }
+    if(proteins2[i][NrDevSteps-1][SegmGeneNr]-ThOn>-0.00001)
+      fprintf(f2,"1\t");
+    else
+      fprintf(f2,"0\t");
+    for(it=divided[i].begin(); it!=divided[i].end(); ++it)
+      fprintf(f2,"%d\t",(*it));
+    fprintf(f2,"\n");
   }
   fclose(f2);
- //printf("SSstep: %d\n", SSstep);
-  if(success.size())
-    SSstep=(int)((double)SSstep/(double)success.size());//average time until reaching equilibrium
-  else
-    SSstep=NrDevSteps-1;
-  
-  sprintf(fname2,"%s/AverageFreezePoint.dat",despath);
-  f2=fopen(fname2,"w"); 
-  fprintf(f2,"%lf\n", proteins2[0][SSstep][0]);
-  fclose(f2);
-  //storage for the data of the decaying cells
-  data2=(double **)calloc(NrGeneTypes, sizeof(double *));
-  data2[0]=(double *)calloc(SSstep*NrGeneTypes, sizeof(double));
-  
-  for(int i=1; i<NrGeneTypes; i++)
-    data2[i]=data2[i-1]+SSstep;
-  
-  /************************************/
+
   
   /** ***************************** **/
   
@@ -369,13 +330,11 @@ int main(int argc, char **argv)
   /** Cells set 1 **/
   sprintf(fname1,"%s/FourierFixed.dat",despath);
   f1=fopen(fname1,"w");
-  sprintf(fname1,"%s/FourierHeatmap.dat",despath);
-  f2=fopen(fname1,"w");
   
   vector< vector< vector <double> > > corr; //cells series genes
   double prod;
   
-  for (int i=0; i<FIXCELLS; i++){
+  for (int i=0; i<2; i++){
 
       
     //append vector to corr for this cell
@@ -394,48 +353,38 @@ int main(int argc, char **argv)
     for(int k=0; k<((NrDevSteps/*+EXTRATIME*/)/2+1);k++)
     {
       corr[i].push_back(vector< double> ());
-      fprintf(f2,"%lf\t",C1[i].proteinstates[0]);
       fprintf(f1,"%lf\t",k*sampling/(NrDevSteps/*+EXTRATIME*/)); 
-      fprintf(f2,"%lf\t",k*sampling/(NrDevSteps/*+EXTRATIME*/));
       //go through the genes
       for(int l=0; l<NrGeneTypes; l++) 
       {
 	prod=sqrt(store[l][k][0]*store[l][k][0]+store[l][k][1]*store[l][k][1]);
 	fprintf(f1,"%lf\t",prod); //print magnitude of the complex output
-	fprintf(f2,"%lf\t", prod); //print magnitude of the complex output
 	corr[i][k].push_back(prod); //store it for cross-correlations and such
       }
       fprintf(f1,"\n");
-      fprintf(f2,"\n");
     }
     /*** do other stuff with the stored data? ***/
     
     store.clear();
     //store.resize();
-    fprintf(f2,"\n");
     fprintf(f1,"\n\n");
-}
+  }
   
- fclose(f2); 
- fclose(f1);
+  fclose(f1);
  
   
-  
-  
   /** Fourier joint time frequency (sliding window) analysis **/ //window of 300 steps, halfway overlap between slides: 11 points
-  //double lastwindow[FIXCELLS][NrGeneTypes]; //stores for every cell and gene the amplitude of the last window. used to distinguish sustained and damped osc. for class.
-  //construct a filename
+   //construct a filename
   sprintf(fname1,"%s/FourierSlideWindow.dat",despath);
   f1=fopen(fname1,"w");
-  for (int i=0; i<FIXCELLS; i++){
-    
-    for(int l=0; l<(NrDevSteps+EXTRATIME)/(WINDOWSIZE/2)-1; l++) //go through all window positions
+  
+  for(int l=0; l<(NrDevSteps+EXTRATIME)/(WINDOWSIZE/2)-1; l++) //go through all window positions
     {
-         
+      
       //copy data into a temporary 2D array: for this "sliding window" analysis, we only use the series within the window
       for(int j=0;j<NrGeneTypes; j++){
 	for(int k=0; k<WINDOWSIZE;k++){
-	  data[j][k]=proteins[i][k+l*(WINDOWSIZE/2)][j];
+	  data[j][k]=proteins[0][k+l*(WINDOWSIZE/2)][j];
 	}
       }
       //fourier transform output is stored in the triple vector "store"
@@ -463,13 +412,11 @@ int main(int argc, char **argv)
     store.clear(); //empty storage for next window
     
     }
-    fprintf(f1,"\n\n"); //give data for each cell in block
-    
-  }
+
   fclose(f1);
    
   
-  /* find dominant frequencies for each gene and morphogen concentration */
+  /** find dominant frequencies for each gene and morphogen concentration */
   double maxim=0.;
   int freq;
   double topmax=0;
@@ -484,7 +431,7 @@ int main(int argc, char **argv)
   sprintf(fname2,"%s/NativeGeneFreq.dat",despath); //stores for each gene its frequency and max amplitude in the growth zone
   f4=fopen(fname2,"w");
   
-  for (int i=0; i<FIXCELLS; i++)
+  for (int i=0; i<2; i++)
   {
     fprintf(f1, "%lf\t", C1[i].proteinstates[0]);
     fprintf(f2, "%lf\t", C1[i].proteinstates[0]);
@@ -541,162 +488,6 @@ int main(int argc, char **argv)
   /** *********** **/
   corr.clear();
    
-  // vector< vector< vector <double> > > corr; //cells series genes
-  /** Cells set 2 **/
-   //construct a filename
-   sprintf(fname1,"%s/FourierDecay.dat",despath);
-   f1=fopen(fname1,"w");
-  for (int i=0; i<50; i++){
-   
-    
-    //append vector to corr for this cell
-    corr.push_back(vector< vector< double> > ());
-    
-    //copy data into a temporary 2D array
-    for(int j=0;j<NrGeneTypes; j++){
-      for(int k=0; k<SSstep;k++){
-	data2[j][k]=proteins2[i][k][j];
-      }
-    }
-    
-    doTransform(data2, SSstep, NrGeneTypes); //fourier transform output is stored in the triple vector "store"
-    
-     //the series is printed in a column per gene
-    for(int k=0; k<(SSstep/2+1);k++)
-    {
-      
-      corr[i].push_back(vector< double> ());
-      
-      fprintf(f1,"%lf\t",k*sampling/SSstep /**2*3.14*/);
-      //go through the genes
-      for(int l=0; l<NrGeneTypes; l++) 
-      {
-	fprintf(f1,"%lf\t", sqrt(store[l][k][0]*store[l][k][0]+store[l][k][1]*store[l][k][1]) ); //print magnitude of the complex output
-	corr[i][k].push_back(sqrt(store[l][k][0]*store[l][k][0]+store[l][k][1]*store[l][k][1])); //store it for cross-correlations and such
-	
-      }
-      fprintf(f1,"\n");
-    }
-    /*** do other stuff with the stored data? ***/
-    //check the profiles of genes between different cells
-    store.clear();
-    //store.resize();
-    fprintf(f1,"\n\n");
-   
-  }
-   fclose(f1);
-  /** ************************ **/
-  
-   /** correlations and stuff **/
-  
-  vector < vector <double> > high (NrGeneTypes, vector <double> (SSstep/2+1, 0));
-  vector < vector <double> > low (NrGeneTypes, vector <double> (SSstep/2+1, 0)); //genes, series
-  int num=success.size();
-  
-  /*make average for high and low cells */
-  for (int i=0; i<50; i++)
-  {
-    if(i==success[0]) //it is a high cell 
-    {
-      for (int p=0; p<NrGeneTypes; p++)
-      {
-	for(int w=0; w<SSstep/2+1;w++)
-	{
-	  high[p][w]+=corr[i][w][p]/(double)num;
-	}
-      }
-      success.pop_front();
-    }
-    else
-    {
-      for (int p=0; p<NrGeneTypes; p++)
-      {
-	for(int w=0; w<SSstep/2+1;w++)
-	{
-	  low[p][w]+=corr[i][w][p]/(double)(50.-num);
-	}
-      }
-    }
-  }
-  
-  /**check for the max oscillating gene, how the frequency changes in the decaying cell **/
-  //construct a filename
-   sprintf(fname1,"%s/DecayPeakProfiles.dat",despath);
-   f1=fopen(fname1,"w");
-  
-   //double locmax=0;
-   double xposmax=0.;
-   double prev=0;
-   int found=0;
-   
-  for(int i=0; i<DECCELLS; i++)
-  {
-    fprintf(f1,"%d",i);
-    for(int j=0;j<SSstep; j++)
-    {
-      if(proteins2[i][j][maxgene]>prev)
-      {
-	found=0;
-	//locmax=proteins2[i][j][maxgene];
-	xposmax=j;
-      }
-      
-      else if(proteins2[i][j][maxgene]<prev && !found)
-      {
-	fprintf(f1,"\t%.2lf",xposmax);
-	//locmax=0.0;
-	found=1;
-      }
-      prev=proteins2[i][j][maxgene];
-    }
-    fprintf(f1,"\n");
-  }
-  fclose(f1);
-  
-  /*check for which genes, the difference is largest */
-  
- /* sprintf(fname1,"%s/AverageHigh.dat",despath);
-  f1=fopen(fname1,"w");
-  
-  sprintf(fname2,"%s/AverageLow.dat",despath);
-  f2=fopen(fname2,"w");
-  
-  vector < vector <double> > diff (NrGeneTypes, vector <double> (SSstep/2+1, 0));
-  double max=0.;
-  int strong_gene=0;
-  vector < double > overalldiff(NrGeneTypes,0);
-  
-  for(int w=0; w<SSstep/2+1;w++)
-  {
-    fprintf(f1, "%lf\t", w*sampling/SSstep // *2*3.14);
-    fprintf(f2, "%lf\t", w*sampling/SSstep // *2*3.14);
-    
-    for (int p=0; p<NrGeneTypes; p++)
-    {
-      fprintf(f1, "%lf\t",high[p][w]);
-      fprintf(f2, "%lf\t",low[p][w]);
-      diff[p][w]=sqrt((high[p][w]-low[p][w])*(high[p][w]-low[p][w]));
-      overalldiff[p]+=diff[p][w];
-      
-      if(diff[p][w]-max>0.001)
-      {
-	max=diff[p][w];
-	strong_gene=p;
-      }
-    }
-    fprintf(f1, "\n");
-    fprintf(f2, "\n");
-  }
-  printf("gene with strongest difference peak: %d\n",strong_gene);
-  for (int p=0; p<NrGeneTypes; p++)	
-  {
-    printf("gene %d: difference %lf\n", p, overalldiff[p]);
-  }
-  
-  fclose(f1);
-  fclose(f2);*/
-  
- 
  
   return 0;
   
