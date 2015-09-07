@@ -31,6 +31,7 @@ int averagepattern=0;
 int NrDevSteps=600;//600;//120;//150;
 int targetsize=150;
 int StorageInt=5;//5;//1;//6;
+double divprob=0.975;
 
 double genepen=0.00001; //penalty for nr of genes
 double tfbspen=0.000001;//penalty for nr of tfbs

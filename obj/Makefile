@@ -6,7 +6,7 @@
 CXX = g++
 
 #Flag to see whether we compile normal code or analysis code
-ANA= "la"
+ANA= 
 THO=
 VID=  
 

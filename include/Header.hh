@@ -93,6 +93,7 @@ extern double HT;//0.2;//1.;//0.5;
 extern int MaintInt;//10;//20;
 extern int InitNrCells;//128;;//1;
 extern int targetsize;
+extern double divprob;
 extern int storecellspec; //whether you want cellid specific time info
 extern int averagepattern; //whether the fitness should be measured over an average of the last MaintInt timesteps
 extern double genepen;
