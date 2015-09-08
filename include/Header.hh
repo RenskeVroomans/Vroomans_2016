@@ -25,8 +25,8 @@ using namespace std;
 #define SUMINTEGRATION
 //#define MULTIPLYINTEGRATION
 
-#define RUN
-//#define RERUN
+//#define RUN
+#define RERUN
 //#define NOANCESTRY
 //#define INITGENOME
 

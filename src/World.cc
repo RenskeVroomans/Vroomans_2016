@@ -166,8 +166,8 @@ int main(int argc, char **argv)
 #ifdef RERUN
       if(i%10==0)
 	(*P).WriteBandsToFile(i);
-      //if(i%100==0)
-	//(*P).WriteFittestMatricesToFile(i);
+      if(i%100==0)
+	(*P).WriteFittestMatricesToFile(i);
 #endif
 #ifdef NOANCESTRY
       if(i%10==0)
