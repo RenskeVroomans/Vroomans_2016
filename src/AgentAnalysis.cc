@@ -1044,10 +1044,19 @@ void Agent::WriteFullAgeProfile(char *dirname,int c)
     {
       if(celltypes[i][j]>=0) //graded coloring of cell age
       {
-	RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
-	RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
-	RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+	//RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
+	//RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
+	//RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+0]=max(min(255.,(double)(celltypes[i][j]-64)*4.),0.);//R	
+	RGBdata[i*WW*3+j*3+1]=max(min(255.,(double)(celltypes[i][j]-128)*4.),0.);//G
+	if(celltypes[i][j]<128) //blue is more complicated
+	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)celltypes[i][j]*4.),0.);
+	else if(celltypes[i][j]<192)
+	  RGBdata[i*WW*3+j*3+2]=max(min(255.,255.-(double)(celltypes[i][j]-127)*4.),0.);
+	else
+	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)(celltypes[i][j]-192)*4.),0.);
       }
+      
       
       else //non-tissue part
       {
@@ -1145,9 +1154,17 @@ void Agent::WriteTimepointAgeProfile(char *dirname, int c, int timepoint)
     {
       if(celltypes[i][j]>=0) //graded coloring of cell age
       {
-	RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
-	RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
-	RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+	//RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
+	//RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
+	//RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+0]=max(min(255.,(double)(celltypes[i][j]-64)*4.),0.);//R	
+	RGBdata[i*WW*3+j*3+1]=max(min(255.,(double)(celltypes[i][j]-128)*4.),0.);//G
+	if(celltypes[i][j]<128) //blue is more complicated
+	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)celltypes[i][j]*4.),0.);
+	else if(celltypes[i][j]<192)
+	  RGBdata[i*WW*3+j*3+2]=max(min(255.,255.-(double)(celltypes[i][j]-127)*4.),0.);
+	else
+	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)(celltypes[i][j]-192)*4.),0.);
       }
       
       else //non-tissue part

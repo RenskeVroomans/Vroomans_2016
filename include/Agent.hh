@@ -37,7 +37,7 @@ class Agent
   int anrcells_;
   int maintsize;
   double wfspeed;
-  double divprob; //individual division probability for stochastic divisions
+  //double divprob; //individual division probability for stochastic divisions
 
   list<int> ancestry;
   typedef std::list<int>::iterator iter;

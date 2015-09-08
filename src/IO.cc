@@ -169,7 +169,7 @@ int ReadPars(int argc, char* argv[])
     StorageInt=(int)ceil((double)NrDevSteps/(double)(NrStorages-1));
  
     //cout << "storageint: " << StorageInt << ", NrDevSteps: " << NrDevSteps << endl;
- 
+
     probnontandgenedupl=0.000060*fac;
     probgenedel=0.000090*fac;//0.00120*fac;//0.000090*fac;
     probgeneDDchange=0.000030*fac;
