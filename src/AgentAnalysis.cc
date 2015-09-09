@@ -1044,17 +1044,18 @@ void Agent::WriteFullAgeProfile(char *dirname,int c)
     {
       if(celltypes[i][j]>=0) //graded coloring of cell age
       {
-	//RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
-	//RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
-	//RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
-	RGBdata[i*WW*3+j*3+0]=max(min(255.,(double)(celltypes[i][j]-64)*4.),0.);//R	
-	RGBdata[i*WW*3+j*3+1]=max(min(255.,(double)(celltypes[i][j]-128)*4.),0.);//G
-	if(celltypes[i][j]<128) //blue is more complicated
-	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)celltypes[i][j]*4.),0.);
-	else if(celltypes[i][j]<192)
-	  RGBdata[i*WW*3+j*3+2]=max(min(255.,255.-(double)(celltypes[i][j]-127)*4.),0.);
-	else
-	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)(celltypes[i][j]-192)*4.),0.);
+	RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+	//gnuplot2 gradient; makes no difference. is worse if anything.
+// 	RGBdata[i*WW*3+j*3+0]=max(min(255.,(double)(celltypes[i][j]-64)*4.),0.);//R	
+// 	RGBdata[i*WW*3+j*3+1]=max(min(255.,(double)(celltypes[i][j]-128)*4.),0.);//G
+// 	if(celltypes[i][j]<128) //blue is more complicated
+// 	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)celltypes[i][j]*4.),0.);
+// 	else if(celltypes[i][j]<192)
+// 	  RGBdata[i*WW*3+j*3+2]=max(min(255.,255.-(double)(celltypes[i][j]-127)*4.),0.);
+// 	else
+// 	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)(celltypes[i][j]-192)*4.),0.);
       }
       
       
@@ -1154,17 +1155,17 @@ void Agent::WriteTimepointAgeProfile(char *dirname, int c, int timepoint)
     {
       if(celltypes[i][j]>=0) //graded coloring of cell age
       {
-	//RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
-	//RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
-	//RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
-	RGBdata[i*WW*3+j*3+0]=max(min(255.,(double)(celltypes[i][j]-64)*4.),0.);//R	
-	RGBdata[i*WW*3+j*3+1]=max(min(255.,(double)(celltypes[i][j]-128)*4.),0.);//G
-	if(celltypes[i][j]<128) //blue is more complicated
-	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)celltypes[i][j]*4.),0.);
-	else if(celltypes[i][j]<192)
-	  RGBdata[i*WW*3+j*3+2]=max(min(255.,255.-(double)(celltypes[i][j]-127)*4.),0.);
-	else
-	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)(celltypes[i][j]-192)*4.),0.);
+	RGBdata[i*WW*3+j*3+0]=max(0.0, 255.-0.5*celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+1]=max(0.0, 255.-celltypes[i][j]);
+	RGBdata[i*WW*3+j*3+2]=max(0.0, 255.-3*celltypes[i][j]);
+// 	RGBdata[i*WW*3+j*3+0]=max(min(255.,(double)(celltypes[i][j]-64)*4.),0.);//R	
+// 	RGBdata[i*WW*3+j*3+1]=max(min(255.,(double)(celltypes[i][j]-128)*4.),0.);//G
+// 	if(celltypes[i][j]<128) //blue is more complicated
+// 	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)celltypes[i][j]*4.),0.);
+// 	else if(celltypes[i][j]<192)
+// 	  RGBdata[i*WW*3+j*3+2]=max(min(255.,255.-(double)(celltypes[i][j]-127)*4.),0.);
+// 	else
+// 	  RGBdata[i*WW*3+j*3+2]=max(min(255.,(double)(celltypes[i][j]-192)*4.),0.);
       }
       
       else //non-tissue part
@@ -1426,6 +1427,93 @@ void Agent::WriteGeneEmbryology(char *subdir, int c, int gene)
 
 }
 
+void Agent::WriteTimepointGene(char *subdir, int c, int gene, int timepoint)
+{
+  int i,j,k,l;
+  int ii,jj;
+  FILE *PNGFileP;  
+  png_structp png_ptr;
+  png_infop info_ptr;
+  png_bytep row_pointer;
+  char fname[500];
+  const int zoom=4;
+  const int WW=zoom*NrFinalCells;
+  const int LL=zoom*4;
+  int celltypes[LL][WW];
+  unsigned char RGBdata[LL*WW*3];
+  int type;
+  int color;
+
+  int max=0;
+  //find max expression of this gene
+  for(j=0;j<NrFinalCells;j++)
+    if(E[timepoint][j][gene]>max)
+      max=E[timepoint][j][gene];
+  
+  for(i=0;i<4;i++)
+    for(j=0;j<NrFinalCells;j++)
+    {
+      color=SegmentToColor(E[timepoint][j][gene],max);
+      for(ii=0;ii<zoom;ii++)
+	for(jj=0;jj<zoom;jj++)
+	  celltypes[zoom*i+ii][zoom*j+jj]=color;
+    }
+
+    //blue to white scale
+    for(i=0;i<LL;i++)
+      for(j=0;j<WW;j++)
+      {
+	RGBdata[i*WW*3+j*3+0]=255-celltypes[i][j];
+	RGBdata[i*WW*3+j*3+1]=255-celltypes[i][j];
+	RGBdata[i*WW*3+j*3+2]=255;
+      }
+
+ 
+  if(c==0)
+    sprintf(fname,"%s/%s/Gene%dAt%d_Agent%.10d%s.png",despath,subdir,gene,timepoint, agentid,"original");
+  else
+    sprintf(fname,"%s/%s/Gene%dAt%d_Agent%.10d_%d.png",despath,subdir,gene,timepoint, agentid,c);
+    
+
+  PNGFileP = fopen(fname, "wb");
+
+  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,(png_voidp) NULL,
+				    (png_error_ptr) NULL, 
+				    (png_error_ptr) NULL );
+  if(!png_ptr)
+    {
+      printf("out of memory\n");
+      exit(1);
+    }
+  info_ptr = png_create_info_struct ( png_ptr );
+  if(!info_ptr)
+    {
+      png_destroy_write_struct(&png_ptr, NULL);
+      printf("out of memory\n");
+      exit(1);
+    }
+  png_init_io ( png_ptr, PNGFileP );
+  png_set_IHDR(png_ptr, info_ptr,WW,LL,
+	       8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+	       PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+  // write header
+  png_write_info ( png_ptr, info_ptr );
+  // write out image, one row at a time 
+  int row;
+  for ( row = 0; row <LL; row++ ) 
+    {
+      row_pointer = ( RGBdata + WW * row * 3 );
+      png_write_rows ( png_ptr, &row_pointer, 1 );
+    }
+  // flush all info to file 
+  png_write_end ( png_ptr, info_ptr );
+  fflush ( PNGFileP );
+  png_destroy_write_struct ( &png_ptr,&info_ptr);
+  fclose(PNGFileP);
+
+  //printf("spacetimeplot development png written to file\n");
+
+}
 void Agent::WriteVideo(int gene)
 {
   int genemax=0, segmax=0;

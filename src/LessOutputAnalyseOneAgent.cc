@@ -12,6 +12,7 @@
 #include <sys/stat.h>
 #include <png.h>
 
+
 dsfmt_t dsfmt;
 double gauss[10000];
 
@@ -496,6 +497,27 @@ void Start(int argc,char **argv)
   
 }
 
+void WriteReadme(char *dirname)
+{
+ FILE *file;
+ char fname[500];
+ sprintf(fname, "%s/%s/README.txt",despath,dirname);
+ file=fopen(fname,"w");
+ 
+ fprintf(file,"This directory contains the data from ten repetitions of the same network\n");
+ fprintf(file,"Below, I describe the contents of the pictures\n\n\n");
+ fprintf(file,"CelltypesAgent*:The usual cell type picture. Only done once\n");
+ fprintf(file,"GrowthAgent*:full picture of cell divisions. Only done once\n\n");
+ fprintf(file,"Gene*Agent*:the expression of one particular gene\n");
+ fprintf(file,"Gene*At*:the expression of one particular gene at a certain timepoint\n");
+ fprintf(file,"Age*:the cell ages over the entire run\n");
+ fprintf(file,"AgeAt*:the cell ages at a particular time point\n");
+ fprintf(file,"ClonesPoint*:full picture with clones appointed at a certain timepoint\n");
+
+ fclose(file);
+} 
+
+
 int main(int argc, char **argv)
 {
   FILE *f3;
@@ -548,6 +570,7 @@ int main(int argc, char **argv)
       A1->WriteEmbryology(iterdir);
       A1->WriteDivisionProfile(iterdir);
       A1->WriteGeneEmbryology(iterdir,1, 10); //make more pictures
+      WriteReadme(iterdir);
     }
     A1->WriteGeneEmbryology(iterdir,i+1, SegmGeneNr); //make more pictures
     A1->WriteGeneEmbryology(iterdir,i+1, GrowGeneNr); //make more pictures
@@ -557,6 +580,8 @@ int main(int argc, char **argv)
     A1->WriteTimepointAgeProfile(iterdir,i+1, 2);
     A1->WriteCloneProfile(iterdir, i+1,1);
     A1->WriteCloneProfile(iterdir, i+1,2);
+    A1->WriteTimepointGene(iterdir,i+1,0,1);
+    A1->WriteTimepointGene(iterdir,i+1,0,2);
     fprintf(f3, "%d %d %d %d\n", i,  A1->cells.size(), A1->nrlongbands, A1->nrbands-A1->nrlongbands); //iteration, bodysize, nrlongbands, nrshortbands
     
     //find minimum and maximum
