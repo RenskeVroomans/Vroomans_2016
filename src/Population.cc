@@ -815,7 +815,7 @@ void Population::WriteFullAncestry(Agent *C)//RERUN
 void Population::WriteAgentToFile(char *dirname,int i,int j)
 {
   Ags[i][j]->WriteEmbryology(dirname);
-  Ags[i][j]->WriteDivisionProfile(dirname);
+  Ags[i][j]->WriteDivisionProfile(dirname,0);
   Ags[i][j]->WriteGenome(dirname);
   //Ags[i][j]->WriteSignalProfiles(dirname);
   Ags[i][j]->WriteFitnessDetails(dirname);

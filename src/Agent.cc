@@ -1283,7 +1283,7 @@ void Agent::WriteEmbryology(char *dirname)
   fclose(PNGFileP);
 }
 
-void Agent::WriteDivisionProfile(char *dirname)
+void Agent::WriteDivisionProfile(char *dirname, int c)
 {
   int i,j;
   int ii,jj;
@@ -1339,8 +1339,12 @@ void Agent::WriteDivisionProfile(char *dirname)
 	
       }
     }
-
-  sprintf(fname,"%s/%s/GrowthAgent%.10d.png",despath,dirname,agentid);
+    
+  if(!c)  
+    sprintf(fname,"%s/%s/GrowthAgent%.10d.png",despath,dirname,agentid);
+  else
+    sprintf(fname,"%s/%s/GrowthAgent%.10d_%d.png",despath,dirname,agentid,c);
+  
   PNGFileP = fopen(fname, "wb");
 
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,(png_voidp) NULL,

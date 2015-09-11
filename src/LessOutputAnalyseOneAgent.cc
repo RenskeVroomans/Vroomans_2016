@@ -568,10 +568,10 @@ int main(int argc, char **argv)
       A1->DetermineLoopAndMotifProperties();
       A1->WriteLoopAndMotifProperties(A1->agentid, "original");
       A1->WriteEmbryology(iterdir);
-      A1->WriteDivisionProfile(iterdir);
       A1->WriteGeneEmbryology(iterdir,1, 10); //make more pictures
       WriteReadme(iterdir);
     }
+    A1->WriteDivisionProfile(iterdir, i+1);
     A1->WriteGeneEmbryology(iterdir,i+1, SegmGeneNr); //make more pictures
     A1->WriteGeneEmbryology(iterdir,i+1, GrowGeneNr); //make more pictures
     A1->WriteFullAgeProfile(iterdir,i+1);
@@ -580,6 +580,7 @@ int main(int argc, char **argv)
     A1->WriteTimepointAgeProfile(iterdir,i+1, 4);
     A1->WriteCloneProfile(iterdir, i+1,2);
     A1->WriteCloneTimecourse(iterdir,i+1,2);
+    A1->WriteCloneTimecourse(iterdir,i+1,4);
     A1->WriteCloneProfile(iterdir, i+1,4);
     A1->WriteTimepointGene(iterdir,i+1,0,2);
     A1->WriteTimepointGene(iterdir,i+1,0,4);

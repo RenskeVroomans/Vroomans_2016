@@ -65,7 +65,7 @@ class Agent
   int SegmentToColor(int type, int max);
   int ProteinStateToCellType(double proteinstates[NrGeneTypes]);
   void WriteEmbryology(char *dirname);
-  void WriteDivisionProfile(char *dirname);
+  void WriteDivisionProfile(char *dirname, int c);
   void WriteSignalProfiles(char *dirname);
   void WriteFitnessDetails(char *dirname);
   

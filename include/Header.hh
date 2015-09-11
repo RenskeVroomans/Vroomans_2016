@@ -25,8 +25,8 @@ using namespace std;
 #define SUMINTEGRATION
 //#define MULTIPLYINTEGRATION
 
-#define RUN
-//#define RERUN
+//#define RUN
+#define RERUN
 //#define NOANCESTRY
 //#define INITGENOME
 
@@ -67,7 +67,7 @@ const int NrSignGeneTypes=0;//4;//2;// genes that diffuse or signal to neighbour
 const int GrowGeneNr=4;//NrMatGeneTypes+NrSignGeneTypes; //the gene that regulates growth
 const int SegmGeneNr=5;//NrMatGeneTypes+NrSignGeneTypes;//gene 5 (was 7) the "output" gene 
 
-const int NrStorages=241;//121;//1+(NrDevSteps/StorageInt);//not read from parfile
+const int NrStorages=121;//241;//1+(NrDevSteps/StorageInt);//not read from parfile
 const int NrFinalCells=150;//134;//125;//200
 const int minbandsize=7;//9;//8;
 const int MaxNrBands=NrFinalCells/minbandsize; //not read from parfile
