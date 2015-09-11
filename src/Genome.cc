@@ -843,7 +843,7 @@ int Genome::GeneIsInGenome(int type)
 void Genome::RemoveDisconnectedGenes()
 {
   iter it, next;
-  int counter=0,flag=0;
+  int counter=0,flag=1;
   
   it=ChromBBList->begin();
   while(it!=ChromBBList->end())
@@ -864,7 +864,7 @@ void Genome::RemoveDisconnectedGenes()
     if(IsGene(*it))
     {
       flag++;
-      if(flag>1 && (*it)->type>0)
+      if(flag>1 && (*it)->type>0 &&(*it)->type!=6 && (*it)->type!=7)
       {
 	next=it;
 	++next;

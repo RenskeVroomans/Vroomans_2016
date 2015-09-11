@@ -1337,6 +1337,31 @@ void Agent::WriteCloneProfile(char *dirname, int c, int timepoint)
   fclose(PNGFileP);
 }
 
+void Agent::WriteCloneTimecourse(char *subdir, int c, int timepoint)
+{
+  //file opening 
+  FILE *f;
+  char fname[500];
+  sprintf(fname,"%s/%s/Clonetimecourse%d_%d",despath, subdir,timepoint, c);
+  f=fopen(fname, "w");
+  
+  for(int k=0; k<NrGeneTypes; k++)
+  {
+    for(int i=timepoint; i<NrStorages; i++)
+    {
+      fprintf(f,"%d\t",i);
+      for(int j=0; j<NrFinalCells; j++)
+      {
+	if((ages[i][j]/StorageInt)>=i-timepoint && j>=InitNrCells-1 && ages[i][j]>=0)
+	  fprintf(f, "%d\t",E[i][j][k]);
+      }
+      fprintf(f,"\n");
+    }
+    fprintf(f,"\n\n\n");
+  }
+  fclose(f);
+}
+
 void Agent::WriteGeneEmbryology(char *subdir, int c, int gene)
 {
   int i,j,k,l;

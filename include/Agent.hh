@@ -92,6 +92,7 @@ class Agent
   void WriteFullAgeProfile(char *subdir, int c);
   void WriteTimepointAgeProfile(char *subdir, int c, int timepoint);
   void WriteCloneProfile(char *dirname, int c, int timepoint);
+  void WriteCloneTimecourse(char *subdir,int c, int timepoint);
   void WriteGeneEmbryology(char *subdir, int c, int gene);
   void WriteTimepointGene(char *subdir, int c, int gene, int timepoint);
   void WriteVideo(int gene);

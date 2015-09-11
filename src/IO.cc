@@ -129,6 +129,8 @@ int ReadPars(int argc, char* argv[])
     ("stablesizepen", po::value<double>(&stablesizepen)->default_value(0.),"fitness penalty for dividing within maintenance period")
     ("regpen", po::value<double>(&regpen)->default_value(0.),"fitness penalty for having differently-sized segments")
     ("divprob", po::value<double>(&divprob)->default_value(0.975),"probability of dividing once growth gene high enough")
+    ("morphinflux", po::value<double>(&morphinflux)->default_value(0.),"amount of morphogen flowing into posterior cell in FREEMORPH")
+    
     //used in Genome.cc
     ("AvCon", po::value<int>(&AvCon)->default_value(3), "average connectivity of a node?")
     ("fac", po::value<double>(&fac)->default_value(100))

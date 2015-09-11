@@ -317,6 +317,14 @@ void Agent::CellCellSignalling(int t)
 
 #ifdef FREEMORPH
 //the morphogen behaves like every other gene; just forms asymmetric initial condition.
+iter=cells.begin();
+
+(*iter).proteinstates[0]+=morphinflux;
+for(int ii=0;ii<G->gnrgenes_;ii++)
+{
+  if(G->genetypeorder[ii]<NrMatGeneTypes)
+    (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
+}
 #endif
 
 #ifdef POSTERIORSIGNAL

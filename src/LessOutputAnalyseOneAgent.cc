@@ -576,12 +576,13 @@ int main(int argc, char **argv)
     A1->WriteGeneEmbryology(iterdir,i+1, GrowGeneNr); //make more pictures
     A1->WriteFullAgeProfile(iterdir,i+1);
     A1->WriteTimepointAgeProfile(iterdir,i+1, NrStorages-1);
-    A1->WriteTimepointAgeProfile(iterdir,i+1, 1);
     A1->WriteTimepointAgeProfile(iterdir,i+1, 2);
-    A1->WriteCloneProfile(iterdir, i+1,1);
+    A1->WriteTimepointAgeProfile(iterdir,i+1, 4);
     A1->WriteCloneProfile(iterdir, i+1,2);
-    A1->WriteTimepointGene(iterdir,i+1,0,1);
+    A1->WriteCloneTimecourse(iterdir,i+1,2);
+    A1->WriteCloneProfile(iterdir, i+1,4);
     A1->WriteTimepointGene(iterdir,i+1,0,2);
+    A1->WriteTimepointGene(iterdir,i+1,0,4);
     fprintf(f3, "%d %d %d %d\n", i,  A1->cells.size(), A1->nrlongbands, A1->nrbands-A1->nrlongbands); //iteration, bodysize, nrlongbands, nrshortbands
     
     //find minimum and maximum
