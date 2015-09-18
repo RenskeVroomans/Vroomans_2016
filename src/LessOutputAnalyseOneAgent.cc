@@ -550,7 +550,7 @@ int main(int argc, char **argv)
   char it[10];
     
   ///develop the agent 10 times; check for robustness
-  for (int i=0; i<10; i++) 
+  for (int i=0; i<50; i++) 
   {
     printf("iteration %d\n",i);
     A1=new Agent();
@@ -596,7 +596,7 @@ int main(int argc, char **argv)
     else if(A1->cells.size()>maxsize)
       maxsize=A1->cells.size();
  
-    if(i!=9) //keep the last one for pruning
+    if(i!=49) //keep the last one for pruning
      delete A1;
   }
   
@@ -614,11 +614,11 @@ int main(int argc, char **argv)
   fprintf(f3,"%i\t",A1->agentid); //1
   fprintf(f3,"%i\t%i\t",A1->G->gnrgenes_,A1->G->gnrtfbs_);//2, 3 
   
-
-  /** repeatedly prune (may be that the core depends on the order of pruning ) **/
-  for(int j=1; j<=10; j++)
-  {
-    printf("\npruning nr %d\n", j);
+/*
+//repeatedly prune (may be that the core depends on the order of pruning ) 
+ for(int j=1; j<=10; j++)
+ {
+   printf("\npruning nr %d\n", j);
     if(j<=5)
       Acore=PruneAgent(A1, j, minsize, maxsize, minbands, maxbands);
     else
@@ -631,9 +631,9 @@ int main(int argc, char **argv)
     Acore->WriteGenomeAndNetworkProperties(j);
     delete Acore;
   }
-  
+  fprintf(f3,"\n");
   fclose(f3);
-  
+  */
   return 0;
   
 }
