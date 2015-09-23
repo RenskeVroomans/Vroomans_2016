@@ -4,11 +4,11 @@
 
 /** can be read from parfile **/
 char despath[500];
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
 char ancestryfile[500];
 #endif
 
-#ifdef INITGENOME
+#if defined(INITGENOME) || defined(RERUNINITGENOME)
 char genomefile[500];
 #endif
 

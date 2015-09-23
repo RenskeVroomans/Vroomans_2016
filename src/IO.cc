@@ -31,10 +31,10 @@ int ReadPars(int argc, char* argv[])
   //this function actually lists the options to read from command line
   generic.add_options()
   ("help", "produce help message")
-  #ifdef RERUN
+  #if defined(RERUN) || defined(RERUNINITGENOME)
   ("ancestryfile,a",po::value< vector <string> >()->required(),"file with the ancestor ids")
   #endif
-   #ifdef INITGENOME
+  #if defined(INITGENOME) || defined(RERUNINITGENOME)
   ("genomefile,g",po::value< vector <string> >()->required(),"file with the initial genome")
   #endif
   ("parfile",po::value< vector <string> >(),"file with the parameters")

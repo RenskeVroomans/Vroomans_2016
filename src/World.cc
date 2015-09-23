@@ -110,6 +110,24 @@ int main(int argc, char **argv)
   (*P).WriteBandsToFile(0);
   (*P).WriteFittestMatricesToFile(0);
 #endif
+#ifdef RERUNINITGENOME
+  P=new Population();
+  sprintf(direc,"AncestryGenomes");
+  sprintf(command, "mkdir %s/%s",despath,direc);
+  if(system(command)==-1)
+  {
+    printf("AncestryGenomes: warning: could not make dir. Exiting...\n");
+    exit(1);
+  }
+  (*P).ReadAncestorsFromFile(ancestryfile);
+  dsfmt_init_gen_rand(&dsfmt, seedinitpop);
+  (*P).InitPopulationFromGenome(genomefile);
+  dsfmt_init_gen_rand(&dsfmt, seedmutations);
+  printf("all is initialised\n");
+  (*P).WriteBandsToFile(0);
+  (*P).WriteFittestMatricesToFile(0);
+#endif
+  
 #ifdef NOANCESTRY
   P=new Population();
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
@@ -163,7 +181,7 @@ int main(int argc, char **argv)
       }
 #endif
 
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
       if(i%10==0)
 	(*P).WriteBandsToFile(i);
       if(i%100==0)

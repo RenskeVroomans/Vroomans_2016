@@ -614,7 +614,7 @@ int main(int argc, char **argv)
   fprintf(f3,"%i\t",A1->agentid); //1
   fprintf(f3,"%i\t%i\t",A1->G->gnrgenes_,A1->G->gnrtfbs_);//2, 3 
   
-/*
+
 //repeatedly prune (may be that the core depends on the order of pruning ) 
  for(int j=1; j<=10; j++)
  {
@@ -633,7 +633,7 @@ int main(int argc, char **argv)
   }
   fprintf(f3,"\n");
   fclose(f3);
-  */
+  
   return 0;
   
 }

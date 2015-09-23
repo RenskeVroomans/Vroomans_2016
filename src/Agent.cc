@@ -38,7 +38,7 @@ void Agent::CreateAgentFromScratch(int agid,int t)
   //wfspeed=1.+(uniform()*0.3-0.15);//if you want to add developmental noise
   DevelopAgent();
   DetermineFitness(0);
-#ifdef RUN
+#if defined(RUN) || defined(RERUN)
   ancestry.push_back(-1);//beginning of ancestry, no parent
 #endif
 }
@@ -51,7 +51,7 @@ void Agent::CreateAgentFromGenome(int agid,int t,char *fname)
   //wfspeed=1.+(uniform()*0.3-0.15);//if you want to add developmental noise
   DevelopAgent();
   DetermineFitness(0);
-#ifdef RUN
+#if defined(RUN) || defined(RERUN)
   ancestry.push_back(-1);//beginning of ancestry, no parent
 #endif
 }
@@ -64,7 +64,7 @@ void Agent::CloneAgentFromAgent(Agent *A,int agid,int t)
   //wfspeed=1.+(uniform()*0.3-0.15);//if you want to add developmental noise
   DevelopAgent();
   DetermineFitness(0);
-#ifdef RUN
+#if defined(RUN) || defined(RERUN)
   ancestry.push_back(-1);//beginning of ancestry, no parent
 #endif
 }
@@ -79,7 +79,7 @@ void Agent::CreateAgentFromParent(Agent *A,int agid,int t)
   DevelopAgent();
   DetermineFitness(0);
   //WriteGenome("testje");
-#ifdef RUN
+#if defined(RUN) || defined(RERUN)
   ancestry=A->ancestry;//copy ancestry of parent as to be your ancestry
   ancestry.push_back(A->agentid);//add your parent to your ancestry
 #endif

@@ -26,9 +26,10 @@ using namespace std;
 //#define MULTIPLYINTEGRATION
 
 //#define RUN
-#define RERUN
+//#define RERUN
 //#define NOANCESTRY
-//#define INITGENOME
+#define INITGENOME
+//#define RERUNINITGENOME
 
 #define INITPOINT
 //#define INITGRAD
@@ -42,12 +43,13 @@ using namespace std;
 
 
 extern char despath[500];
-
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
+//#ifdef RERUN 
 extern char ancestryfile[500];
 #endif
 
-#ifdef INITGENOME
+#if defined(INITGENOME) || defined(RERUNINITGENOME)
+//#ifdef INITGENOME
 extern char genomefile[500];
 #endif
 

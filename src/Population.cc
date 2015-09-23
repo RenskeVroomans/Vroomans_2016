@@ -66,7 +66,7 @@ void Population::InitPopulation()
 		      pagidc_++;
 		      pnrags_++;
 		      unfit=FALSE;
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
 		      WriteFullAncestry(Ags[ii+i][jj+j]);
 #endif		      
 		    }
@@ -81,7 +81,7 @@ void Population::InitPopulation()
 	      Ags[ii+i][jj+j]=Arest;
 	      pagidc_++;
 	      pnrags_++;
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
 	      WriteFullAncestry(Ags[ii+i][jj+j]);
 #endif
 	    }
@@ -119,7 +119,7 @@ void Population::InitPopulationFromGenome(char *fname)
 	      Ags[ii+i][jj+j]=A;
 	      pagidc_++;
 	      pnrags_++;
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
 	      WriteFullAncestry(Ags[ii+i][jj+j]);
 #endif		      
 	    }
@@ -130,7 +130,7 @@ void Population::InitPopulationFromGenome(char *fname)
 	      Ags[ii+i][jj+j]=Arest;
 	      pagidc_++;
 	      pnrags_++;
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
 	      WriteFullAncestry(Ags[ii+i][jj+j]);
 #endif
 	    }
@@ -166,7 +166,7 @@ void Population::ReproduceAgent(int t,int sourcei,int sourcej,int desti,int dest
   pagidc_++;
   pnrags_++;
 
-#ifdef RERUN
+#if defined(RERUN) || defined(RERUNINITGENOME)
   WriteFullAncestry(C);
 #endif
 }
