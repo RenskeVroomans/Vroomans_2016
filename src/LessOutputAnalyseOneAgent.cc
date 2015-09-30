@@ -17,12 +17,10 @@ dsfmt_t dsfmt;
 double gauss[10000];
 
 int AgentID;
-int extravid;
+int segmode;
 char filename[500];
 char writepath[500];
 char readpath[500];
-char extrapath[500];//for networks
-int FullAnalysis;
 char *iterdir="/iterations";
 char *prunedir="/pruning";
 
@@ -234,7 +232,7 @@ Agent* PruneAgent(Agent *A,int c)
 }
 */
 
-Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands)
+Agent* PruneSimAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands)
 {
   Agent *Ad;
   Agent *Ap;
@@ -247,9 +245,93 @@ Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minband
   Ap->CloneAgentFromAgent(A,A->agentid,0);
   Ap->G->RemoveDisconnectedGenes();
   int counter=1;
-    
+  
+  int minim=100000, maxim=0;
+  int mins=100000, maxs=0;
+  
   while(counter<=PruneIter)
   {
+    
+    Ad=new Agent();
+    Ad->InitAgent(A->agentid+counter,0,0);
+    Ad->G->CloneGenome(Ap->G);
+    Ad->G->PruneGenome();
+    Ad->N->BuildNetwork(Ad->G);
+    for(int i=0; i<50; i++)
+    {
+      Ap2=new Agent();
+      Ap2->InitAgent(A->agentid+counter,0,0);
+      Ap2->G->CloneGenome(Ad->G);
+      Ap2->N->BuildNetwork(Ap2->G);
+      Ap2->DevelopAgent();
+      Ap2->DetermineFitness(1);
+      if(Ap2->nrlongbands<minim)
+	minim=Ap2->nrlongbands;
+      if(Ap2->nrlongbands>maxim)
+	maxim=Ap2->nrlongbands;
+      if(Ap2->cells.size()<mins)
+	mins=Ap2->cells.size();
+      if(Ap2->cells.size()>maxs)
+	maxs=Ap2->cells.size();
+      delete Ap2;
+    }
+   
+    if(minim<minbands ||minim>minbands ||maxim>maxbands ||maxim<maxbands ||mins<minsize || maxs>maxsize ) //check whether pruning exceeds bounds
+    {
+      //printf("non-accepted change:\n");
+      delete Ad;
+      Ad=NULL;
+      nonaccepted++;
+    }
+    
+    else
+    {
+      delete Ap;
+      Ap=NULL;
+      Ap=new Agent();
+      Ap->CloneAgentFromAgent(Ad, Ad->agentid,0);
+      delete Ad;
+      Ad=NULL; 
+      accepted++;
+      //printf("accepted change\n");  
+      
+    }
+    counter++;
+  }
+  Ap->G->RemoveDisconnectedGenes(); 
+  Ap->N->BuildNetwork(Ap->G);
+  Ap->agentid=iteration;
+  Ap->WriteEmbryology(prunedir);
+  Ap->WriteGenome(iteration);
+  sprintf(name,"%d",iteration);
+  Ap->WriteNetwork(name);
+  //Ap->WriteExtraSignalProfiles(c);
+  Ap->WriteGeneEmbryology(prunedir, iteration, SegmGeneNr);
+  Ap->WriteGeneEmbryology(prunedir,iteration, GrowGeneNr);
+  printf("accepted:%d, nonaccepted: %d\n",accepted, nonaccepted);
+  printf("!!!\n");
+  return Ap;
+}
+
+Agent* PruneSeqAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands)
+{
+  Agent *Ad;
+  Agent *Ap;
+  Agent *Ap2;
+  int PruneIter=500;
+  char name[200];
+  int accepted=0, nonaccepted=0;
+  
+  Ap=new Agent();
+  Ap->CloneAgentFromAgent(A,A->agentid,0);
+  Ap->G->RemoveDisconnectedGenes();
+  int counter=1;
+  
+  int minim=100000, maxim=0;
+  
+  while(counter<=PruneIter)
+  {
+    
     Ad=new Agent();
     Ad->InitAgent(A->agentid+counter,0,0);
     Ad->G->CloneGenome(Ap->G);
@@ -257,9 +339,8 @@ Agent* PruneAgent(Agent *A, int iteration, int minsize, int maxsize, int minband
     Ad->N->BuildNetwork(Ad->G);
     Ad->DevelopAgent();
     Ad->DetermineFitness(1);
-    //printf("new agent: %d bands, original: %d\n", Ad->nrlongbands, A->nrlongbands);
-    
-    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize ||Ad->cells.size()>maxsize ) //check whether pruning exceeds bounds
+         
+    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize || Ad->cells.size()>maxsize ) //check whether pruning exceeds bounds
     {
       //printf("non-accepted change:\n");
       delete Ad;
@@ -426,20 +507,21 @@ void Start(int argc,char **argv)
   
   if(argc<4)
   {
-    printf("usage: <program name> <agent number> <writepath> <generic options (see --help)\n");
+    printf("usage: <program name> <agent number> <segmode> <writepath> <generic options (see --help)\n");
     exit(1);
   }
   else
   {
     AgentID=atoi(argv[1]);
     printf("Agent: %d\n",AgentID);
-    strcpy(writepath,argv[2]);
+    segmode=atoi(argv[2]);
+    strcpy(writepath,argv[3]);
   }
   
-  argv2=duplicateArgv(argc,argv,3);
+  argv2=duplicateArgv(argc,argv,4);
   
   //  printf("full analysis: %d\n",FullAnalysis);
-  ReadPars(argc-2,argv2);// pass a selection of the command line to readpars
+  ReadPars(argc-3,argv2);// pass a selection of the command line to readpars
   
   strcpy(readpath,despath); //the path that you give as despath now, is the path to read from (saves a program option)
   strcpy(despath, writepath); //now, we need to write to despath (elsewhere in one of the functions)
@@ -616,13 +698,13 @@ int main(int argc, char **argv)
   
 
 //repeatedly prune (may be that the core depends on the order of pruning ) 
- for(int j=1; j<=10; j++)
+ for(int j=1; j<=5; j++)
  {
    printf("\npruning nr %d\n", j);
-    if(j<=5)
-      Acore=PruneAgent(A1, j, minsize, maxsize, minbands, maxbands);
+    if(segmode==0)
+      Acore=PruneSeqAgent(A1, j, minsize, maxsize, minbands, maxbands);
     else
-      Acore=PruneAgent(A1, j, minsize, maxsize, maxbands-1, maxbands);
+      Acore=PruneSimAgent(A1, j, minsize, maxsize, minbands, maxbands);
     fprintf(f3,"%i\t%i\t",Acore->G->gnrgenes_,Acore->G->gnrtfbs_);
     sprintf(it,"%d",j);
     Acore->DetermineLoopAndMotifProperties();
