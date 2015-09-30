@@ -25,10 +25,10 @@ using namespace std;
 #define SUMINTEGRATION
 //#define MULTIPLYINTEGRATION
 
-//#define RUN
+#define RUN
 //#define RERUN
 //#define NOANCESTRY
-#define INITGENOME
+//#define INITGENOME
 //#define RERUNINITGENOME
 
 #define INITPOINT

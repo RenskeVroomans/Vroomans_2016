@@ -886,10 +886,14 @@ void Agent::DetermineFitness(int mode)
      shortsegpenalty=nrbands-nrlongbands;
      
      sizefit=sizebonus*(min((double)cells.size()-InitNrCells,(double)targetsize)-InitNrCells)-sizepen*(max(0., (double)cells.size()-(double)targetsize))-stablesizepen*(cells.size()-maintsize); //growing bigger helps by itself
-          
-     regpenalty=regpen*difflengths; //penalty for different sizes of the "big enough" segments
+         
+     //regularity penalty is now a bonus
+     if(nrlongbands>2)
+       regpenalty=(regpen*2)/(difflengths+2); //penalty for different sizes of the "big enough" segments
+     else
+       regpenalty=0;
      
-     nonexpfitness=max(0.001,(nrlongbands+sizefit-glpenalty-instpenalty-shortsegpenalty-regpenalty));
+     nonexpfitness=max(0.001,(nrlongbands+sizefit-glpenalty-instpenalty-shortsegpenalty+regpenalty));
      double selcoef=1.0;
      fitness=exp(selcoef*nonexpfitness)-1.;
      
