@@ -37,6 +37,8 @@ using namespace std;
 
 #define GRADIENT
 //#define FREEMORPH
+//#define FREEDIFF
+//#define MORPHUP
 //#define POSTERIORSIGNAL
 //#define MORPHDIFF
 //#define WAVEFRONT

@@ -327,6 +327,71 @@ for(int ii=0;ii<G->gnrgenes_;ii++)
 }
 #endif
 
+#ifdef FREEDIFF
+//the morphogen is regulated like other genes, but can also diffuse. to be combined with freemorph to create influx in posterior 
+//and regulation by network (where also decay happens)
+double temp=0;
+double temparray[NrFinalCells];
+
+for(k=0; k<Nrdiffsteps; k++)
+{
+  ///empty storage
+  for(i=0; i<NrFinalCells; i++)
+    temparray[i]=0.;
+  
+  //go through cells, find new values
+  for(i=0,iter=cells.begin();iter!=cells.end();++iter,i++) 
+  {
+    temp=0;
+    ///diffusion:
+    forw=iter;
+    ++forw;
+    back=iter;
+    --back;
+    
+    if(iter!=cells.begin())
+      temp=(*back).proteinstates[0]-(*iter).proteinstates[0];//+neighbour, -self
+    if(forw!=cells.end())
+      temp+=(*forw).proteinstates[0]-(*iter).proteinstates[0];
+    
+    temparray[i]=(HT/(double)Nrdiffsteps)*(DifCoef*temp);//-morphdecay*(*iter).proteinstates[j]);
+    //printf("i=%d, temparray=%.2lf\n",i,temparray[i]);
+    
+  }
+  ///update the proteinarray
+  for(iter=cells.begin(),i=0;iter!=cells.end();++iter,i++)
+  {
+    (*iter).proteinstates[0]+=temparray[i];
+  }
+}
+///update gene states? if diffusion, perhaps unnecessary...
+// for(int ii=0;ii<G->gnrgenes_;ii++)
+// {
+//   if(G->genetypeorder[ii]<NrMatGeneTypes)
+//     (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
+// }
+#endif
+
+#ifdef MORPHUP
+//hard-wired upregulation of morphogen by itself
+double morphstate, Hstate;
+Hstate=H*H;
+double mactiv=20;
+for(iter=cells.begin(),i=0;iter!=cells.end();++iter,i++)
+{
+  morphstate=(*iter).proteinstates[0]*(*iter).proteinstates[0];
+  (*iter).proteinstates[0]+=mactiv*morphstate/(Hstate+morphstate);
+  for(int ii=0;ii<G->gnrgenes_;ii++)
+  {
+    if(G->genetypeorder[ii]<NrMatGeneTypes)
+      (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
+  }
+  
+}
+
+
+#endif
+
 #ifdef POSTERIORSIGNAL
 //Posterior-most cell stays on, rest off. Gene is not regulated by network
 iter=cells.begin();
@@ -398,6 +463,8 @@ for(i=0;iter!=cells.end();++iter,i++)
 
 
 #endif
+
+
 
 
 #ifdef WAVEFRONT  
