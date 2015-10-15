@@ -330,6 +330,8 @@ int main(int argc, char **argv)
   /** Cells set 1 **/
   sprintf(fname1,"%s/FourierFixed.dat",despath);
   f1=fopen(fname1,"w");
+  sprintf(fname1,"%s/FourierHeatmap.dat",despath);
+  f2=fopen(fname1,"w");
   
   vector< vector< vector <double> > > corr; //cells series genes
   double prod;
@@ -353,25 +355,31 @@ int main(int argc, char **argv)
     for(int k=0; k<((NrDevSteps/*+EXTRATIME*/)/2+1);k++)
     {
       corr[i].push_back(vector< double> ());
+      fprintf(f2,"%lf\t",C1[i].proteinstates[0]);
       fprintf(f1,"%lf\t",k*sampling/(NrDevSteps/*+EXTRATIME*/)); 
+      fprintf(f2,"%lf\t",k*sampling/(NrDevSteps/*+EXTRATIME*/));
+      
       //go through the genes
       for(int l=0; l<NrGeneTypes; l++) 
       {
 	prod=sqrt(store[l][k][0]*store[l][k][0]+store[l][k][1]*store[l][k][1]);
 	fprintf(f1,"%lf\t",prod); //print magnitude of the complex output
+	fprintf(f2,"%lf\t", prod); //print magnitude of the complex output
 	corr[i][k].push_back(prod); //store it for cross-correlations and such
       }
       fprintf(f1,"\n");
+      fprintf(f2,"\n");
     }
     /*** do other stuff with the stored data? ***/
     
     store.clear();
     //store.resize();
+    fprintf(f2,"\n");
     fprintf(f1,"\n\n");
   }
   
   fclose(f1);
- 
+  fclose(f2); 
   
   /** Fourier joint time frequency (sliding window) analysis **/ //window of 300 steps, halfway overlap between slides: 11 points
    //construct a filename

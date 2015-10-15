@@ -25,16 +25,19 @@ using namespace std;
 #define SUMINTEGRATION
 //#define MULTIPLYINTEGRATION
 
+///runtype
 #define RUN
 //#define RERUN
 //#define NOANCESTRY
 //#define INITGENOME
 //#define RERUNINITGENOME
 
+///initial conditions
 #define INITPOINT
 //#define INITGRAD
 //#define TWOMORPHS
 
+///morphogen dynamics
 #define GRADIENT
 //#define FREEMORPH
 //#define FREEDIFF
@@ -43,6 +46,8 @@ using namespace std;
 //#define MORPHDIFF
 //#define WAVEFRONT
 
+///division specs
+#define STATHEAD //no divs in head region
 
 extern char despath[500];
 #if defined(RERUN) || defined(RERUNINITGENOME)

@@ -6,8 +6,8 @@
 CXX = g++
 
 #Flag to see whether we compile normal code or analysis code
-ANA= 
-THO= 
+ANA= "la"
+THO= "tho"
 VID=  
 
 CPPFLAGS =  -Wall -O2 -march=x86-64 -mmmx -msse -msse2 -fprefetch-loop-arrays -DDSFMT_MEXP=521 -DHAVE_SSE2
@@ -44,7 +44,7 @@ ALL= Misc.o Cell.o ChromBB.o Gene.o TFBS.o Genome.o Vertex.o Edge.o Network.o  A
 else ifndef VID
 PROJECT = fourier
 LIBRARY = fou
-ALL= Misc.o Cell.o ChromBB.o Gene.o TFBS.o Genome.o Vertex.o Edge.o Network.o  Agent.o AgentAnalysis.o Population.o FourierAnalysis.o dSFMT.o Vars.o IO.o
+ALL= Misc.o Cell.o ChromBB.o Gene.o TFBS.o Genome.o Vertex.o Edge.o Network.o  Agent.o AgentAnalysis.o Population.o FullFourier.o dSFMT.o Vars.o IO.o
 else
 PROJECT = video
 LIBRARY = loo

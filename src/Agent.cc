@@ -364,19 +364,19 @@ for(k=0; k<Nrdiffsteps; k++)
     (*iter).proteinstates[0]+=temparray[i];
   }
 }
-///update gene states? if diffusion, perhaps unnecessary...
-// for(int ii=0;ii<G->gnrgenes_;ii++)
-// {
-//   if(G->genetypeorder[ii]<NrMatGeneTypes)
-//     (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
-// }
+///update gene states? if diffusion, perhaps unnecessary.. NO: proteinstates set to 0 in Network!!!
+for(int ii=0;ii<G->gnrgenes_;ii++)
+{
+  if(G->genetypeorder[ii]<NrMatGeneTypes)
+    (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
+}
 #endif
 
 #ifdef MORPHUP
 //hard-wired upregulation of morphogen by itself
 double morphstate, Hstate;
 Hstate=H*H;
-double mactiv=20;
+double mactiv=40;
 for(iter=cells.begin(),i=0;iter!=cells.end();++iter,i++)
 {
   morphstate=(*iter).proteinstates[0]*(*iter).proteinstates[0];
@@ -535,8 +535,10 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
   for(iter=cells.begin(); iter!=cells.end(); ++iter)
   {
   
+    #ifdef STATHEAD
     if((*iter).id==0 || (*iter).id>=InitNrCells) //the head zone does not divide
     {
+      #endif
       ///animal too big: do not divide.
       if (cells.size()>=NrFinalCells) 
 	return;
@@ -588,7 +590,9 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	    (*iter).divisioncounter++;
 	
 	}
+	#ifdef STATHEAD
     }
+#endif
   }
 }
 

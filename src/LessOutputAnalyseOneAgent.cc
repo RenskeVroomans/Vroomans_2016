@@ -232,7 +232,7 @@ Agent* PruneAgent(Agent *A,int c)
 }
 */
 
-Agent* PruneSimAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands)
+Agent* PruneSimAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands, double minfit, double maxfit)
 {
   Agent *Ad;
   Agent *Ap;
@@ -248,6 +248,7 @@ Agent* PruneSimAgent(Agent *A, int iteration, int minsize, int maxsize, int minb
   
   int minim=100000, maxim=0;
   int mins=100000, maxs=0;
+  double minf=10000000, maxf=0.;
   
   while(counter<=PruneIter)
   {
@@ -273,10 +274,15 @@ Agent* PruneSimAgent(Agent *A, int iteration, int minsize, int maxsize, int minb
 	mins=Ap2->cells.size();
       if(Ap2->cells.size()>maxs)
 	maxs=Ap2->cells.size();
+      if(Ap2->fitness<minf)
+	minf=Ap2->fitness;
+      if(Ap2->fitness>maxf)
+	maxf=Ap2->fitness;
+      
       delete Ap2;
     }
    
-    if(minim<minbands ||minim>minbands ||maxim>maxbands ||maxim<maxbands ||mins<minsize || maxs>maxsize ) //check whether pruning exceeds bounds
+    if(minim<minbands ||minim>minbands ||maxim>maxbands ||maxim<maxbands ||mins<minsize || maxs>maxsize ||minf<minfit ||maxf>maxfit) //check whether pruning exceeds bounds
     {
       //printf("non-accepted change:\n");
       delete Ad;
@@ -313,7 +319,7 @@ Agent* PruneSimAgent(Agent *A, int iteration, int minsize, int maxsize, int minb
   return Ap;
 }
 
-Agent* PruneSeqAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands)
+Agent* PruneSeqAgent(Agent *A, int iteration, int minsize, int maxsize, int minbands, int maxbands, double minfit, double maxfit)
 {
   Agent *Ad;
   Agent *Ap;
@@ -340,7 +346,7 @@ Agent* PruneSeqAgent(Agent *A, int iteration, int minsize, int maxsize, int minb
     Ad->DevelopAgent();
     Ad->DetermineFitness(1);
          
-    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize || Ad->cells.size()>maxsize ) //check whether pruning exceeds bounds
+    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize || Ad->cells.size()>maxsize ||Ad->fitness<minfit ||Ad->fitness>maxfit) //check whether pruning exceeds bounds
     {
       //printf("non-accepted change:\n");
       delete Ad;
@@ -616,6 +622,7 @@ int main(int argc, char **argv)
 // double robustnessdata[10][3]; //bodysize, bands, longbands
   int minbands=1000,maxbands=0;
   int minsize=1000, maxsize=0;
+  double minfit=1000000., maxfit=0.;
   
   /**read command line parameters */
   Start(argc,argv);
@@ -671,13 +678,17 @@ int main(int argc, char **argv)
     //find minimum and maximum
     if(A1->nrlongbands<minbands)
       minbands=A1->nrlongbands;
-    else if(A1->nrlongbands>maxbands)
+    if(A1->nrlongbands>maxbands)
       maxbands=A1->nrlongbands;
     if(A1->cells.size()<minsize)
       minsize=A1->cells.size();
-    else if(A1->cells.size()>maxsize)
+    if(A1->cells.size()>maxsize)
       maxsize=A1->cells.size();
- 
+    if(A1->fitness<minfit)
+      minfit=A1->fitness;
+    if(A1->fitness>maxfit)
+      maxfit=A1->fitness;
+    
     if(i!=49) //keep the last one for pruning
      delete A1;
   }
@@ -702,9 +713,9 @@ int main(int argc, char **argv)
  {
    printf("\npruning nr %d\n", j);
     if(segmode==0)
-      Acore=PruneSeqAgent(A1, j, minsize, maxsize, minbands, maxbands);
+      Acore=PruneSeqAgent(A1, j, minsize, maxsize, minbands, maxbands, minfit, maxfit);
     else
-      Acore=PruneSimAgent(A1, j, minsize, maxsize, minbands, maxbands);
+      Acore=PruneSimAgent(A1, j, minsize, maxsize, minbands, maxbands, minfit, maxfit);
     fprintf(f3,"%i\t%i\t",Acore->G->gnrgenes_,Acore->G->gnrtfbs_);
     sprintf(it,"%d",j);
     Acore->DetermineLoopAndMotifProperties();
