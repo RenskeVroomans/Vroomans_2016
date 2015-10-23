@@ -7,7 +7,7 @@ CXX = g++
 
 #Flag to see whether we compile normal code or analysis code
 ANA= "la"
-THO= "tho"
+THO= "la"
 VID=  
 
 CPPFLAGS =  -Wall -O2 -march=x86-64 -mmmx -msse -msse2 -fprefetch-loop-arrays -DDSFMT_MEXP=521 -DHAVE_SSE2
@@ -34,7 +34,7 @@ LIBPATH = ../lib
 
 # Project vars
 ifndef ANA
-PROJECT = babybugs	#ancestrace #
+PROJECT = ancestrace #babybugs	#
 LIBRARY = mor
 ALL = Misc.o Cell.o ChromBB.o Gene.o TFBS.o Genome.o Vertex.o Edge.o Network.o  Agent.o AgentAnalysis.o Population.o World.o dSFMT.o Vars.o IO.o
 else ifndef THO

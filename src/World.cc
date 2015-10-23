@@ -113,6 +113,7 @@ int main(int argc, char **argv)
 #ifdef RERUNINITGENOME
   P=new Population();
   sprintf(direc,"AncestryGenomes");
+  printf("ancestryfile is %s\n", ancestryfile);
   sprintf(command, "mkdir %s/%s",despath,direc);
   if(system(command)==-1)
   {

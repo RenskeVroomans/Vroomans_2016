@@ -101,6 +101,7 @@ void Population::InitPopulationFromGenome(char *fname)
   // int unfit;
   int counter;
  
+ 
   counter=0;
   ii=NI/2;
   jj=NJ/2;
@@ -781,6 +782,8 @@ void Population::ReadAncestorsFromFile(char *fname)
       popancestry.push_back(intdummy);
     }
   fclose(f);
+  
+  
 }
 
 

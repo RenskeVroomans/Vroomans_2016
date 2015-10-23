@@ -64,7 +64,7 @@ int ReadPars(int argc, char* argv[])
   transform(vs.begin(), vs.end(), std::back_inserter(vc), convert);
   strcpy(despath,&vs[0][0]);
   
-  #ifdef RERUN
+  #if defined(RERUN) || defined(RERUNINITGENOME)
   //convert CC string to char *
   vs.clear();
   vc.clear();
@@ -73,7 +73,7 @@ int ReadPars(int argc, char* argv[])
   strcpy(ancestryfile,&vs[0][0]);
   #endif
   
-  #ifdef INITGENOME
+  #if defined(INITGENOME) || defined(RERUNINITGENOME)
   //convert CC string to char *
   vs.clear();
   vc.clear();
