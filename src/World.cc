@@ -75,7 +75,7 @@ int main(int argc, char **argv)
   P=new Population();
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
   (*P).InitPopulation();
-  dsfmt_init_gen_rand(&dsfmt, seedmutations);
+  //dsfmt_init_gen_rand(&dsfmt, seedmutations);
   printf("all is initialised\n");
   (*P).WritePopFitnessToFile(0);
   (*P).WriteGenomeLengthToFile(0);
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
   P=new Population();
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
   (*P).InitPopulationFromGenome(genomefile);
-  dsfmt_init_gen_rand(&dsfmt, seedmutations);
+  //dsfmt_init_gen_rand(&dsfmt, seedmutations);
   printf("all is initialised\n");
   (*P).WritePopFitnessToFile(0);
   (*P).WriteGenomeLengthToFile(0);
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
   (*P).ReadAncestorsFromFile(ancestryfile);
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
   (*P).InitPopulation();
-  dsfmt_init_gen_rand(&dsfmt, seedmutations);
+  //dsfmt_init_gen_rand(&dsfmt, seedmutations);
   printf("all is initialised\n");
   (*P).WriteBandsToFile(0);
   (*P).WriteFittestMatricesToFile(0);
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
   (*P).ReadAncestorsFromFile(ancestryfile);
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
   (*P).InitPopulationFromGenome(genomefile);
-  dsfmt_init_gen_rand(&dsfmt, seedmutations);
+  //dsfmt_init_gen_rand(&dsfmt, seedmutations);
   printf("all is initialised\n");
   (*P).WriteBandsToFile(0);
   (*P).WriteFittestMatricesToFile(0);
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
   P=new Population();
   dsfmt_init_gen_rand(&dsfmt, seedinitpop);
   (*P).InitPopulation();
-  dsfmt_init_gen_rand(&dsfmt, seedmutations);
+  //dsfmt_init_gen_rand(&dsfmt, seedmutations);
   printf("all is initialised\n");
   (*P).WritePopFitnessToFile(0);
   (*P).WriteGenomeLengthToFile(0);
