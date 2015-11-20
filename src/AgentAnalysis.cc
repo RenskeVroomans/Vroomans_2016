@@ -1695,7 +1695,7 @@ void Agent::WriteExtraSignalProfiles(int c)
     }
     
 
-  for(k=0;k<NrStorages;k+=10)
+  for(k=0;k<20;k+=1)
     {
       sprintf(fname,"%s/SignalProfiles%.10d%s_time%i",despath,agentid,ss,k*StorageInt);
       f=fopen(fname,"w");
@@ -1709,7 +1709,19 @@ void Agent::WriteExtraSignalProfiles(int c)
       fclose(f);
     }
 
-  
+  for(k=20;k<NrStorages;k+=10)
+    {
+      sprintf(fname,"%s/SignalProfiles%.10d%s_time%i",despath,agentid,ss,k*StorageInt);
+      f=fopen(fname,"w");
+      for(i=0;i<NrFinalCells;i++)
+	{      
+	  fprintf(f,"%i\t",i);
+	  for(j=0;j<NrGeneTypes;j++)
+	    fprintf(f,"%i\t",(int)E[k][i][j]);
+	  fprintf(f,"\n"); 
+	}
+      fclose(f);
+    }
  
 
   for(j=0;j<100;j+=5)

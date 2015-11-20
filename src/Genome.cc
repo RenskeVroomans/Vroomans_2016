@@ -111,10 +111,12 @@ void Genome::GenerateGenome()
 	    }
 	}
 
+	#ifndef FREEMORPH
       if(genenr<NrMatGeneTypes)
 	;//no upstream region, conc externally determined
       else
 	{
+#endif
 	  nrcon=1+(int)(uniform()*(AvCon+1));
 	  for(j=0;j<nrcon;j++)
 	    {
@@ -129,7 +131,9 @@ void Genome::GenerateGenome()
 	      gnrtfbs_++;
 	      (*ChromBBList).push_back(tfbs);
 	    }
+	 #ifndef FREEMORPH   
 	}
+#endif
       gene=new Gene(genenr,Decay, Estart);
       glength_++;
       gnrgenes_++;

@@ -346,7 +346,7 @@ Agent* PruneSeqAgent(Agent *A, int iteration, int minsize, int maxsize, int minb
     Ad->DevelopAgent();
     Ad->DetermineFitness(1);
          
-    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize || Ad->cells.size()>maxsize ||Ad->fitness<minfit ||Ad->fitness>maxfit) //check whether pruning exceeds bounds
+    if(Ad->nrlongbands<minbands ||Ad->nrlongbands>maxbands ||Ad->cells.size()<minsize || Ad->cells.size()>maxsize /*||Ad->fitness<minfit ||Ad->fitness>maxfit*/) //check whether pruning exceeds bounds
     {
       //printf("non-accepted change:\n");
       delete Ad;
@@ -647,7 +647,7 @@ int main(int argc, char **argv)
     if(i==0) //only print data the first time
     {
       A1->WriteNetwork("0");    
-      //A1->WriteExtraSignalProfiles(0);
+      A1->WriteExtraSignalProfiles(0);
       //single file for ancestry
       A1->WriteBasicProperties(A1->agentid);
       A1->DetermineGenomeAndNetworkProperties("original");
@@ -725,6 +725,7 @@ int main(int argc, char **argv)
     Acore->WriteLoopAndMotifProperties(Acore->agentid, it);
     Acore->DetermineGenomeAndNetworkProperties(it);
     Acore->WriteGenomeAndNetworkProperties(j);
+    A1->WriteExtraSignalProfiles(j);
     delete Acore;
   }
   fprintf(f3,"\n");
