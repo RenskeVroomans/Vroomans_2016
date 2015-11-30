@@ -194,12 +194,12 @@ void Agent::DevelopAgent()
     
     //Step 2 intracellular dynamics
     IntracellularDynamics();
-    #ifdef TWOMORPHS
-    if(i==NrDevSteps/2)
-    {
-      RemoveGradient();
-    }
-    #endif
+//     #ifdef TWOMORPHS
+//     if(i==NrDevSteps/2)
+//     {
+//       RemoveGradient();
+//     }
+//     #endif
     //step3 divide
     DivideCells();
     
@@ -231,7 +231,7 @@ void Agent::RemoveGradient()
 
 void Agent::FormZygote()
 {
-
+  list<Cell>::iterator iter;
   int startnrcells=InitNrCells;
   int i;
   //setup of identical cells
@@ -244,7 +244,7 @@ void Agent::FormZygote()
   
   #ifdef INITPOINT
   //Set maternal gene in posterior-most cell to 100
-  list<Cell>::iterator iter=cells.begin();
+  iter=cells.begin();
   for (i=0;i<NrMatGeneTypes; i++)
   {
     (*iter).proteinstates[i]=100.;
@@ -252,7 +252,7 @@ void Agent::FormZygote()
   #endif
   
   #ifdef INITGRAD
-  list<Cell>::iterator iter=cells.begin();
+  iter=cells.begin();
   for (i=0;iter!=cells.end(); ++iter,i++)
   {
     (*iter).proteinstates[0]=100.*exp(-morphdecay*i);
@@ -260,7 +260,7 @@ void Agent::FormZygote()
   #endif
   
   #ifdef TWOMORPHS
-  list<Cell>::iterator iter=cells.begin();
+  iter=cells.begin();
   (*iter).proteinstates[0]=100.;
   list<Cell>::reverse_iterator riter=cells.rbegin();
   for (i=0;riter!=cells.rend(); ++riter,i++)

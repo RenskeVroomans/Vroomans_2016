@@ -26,16 +26,16 @@ using namespace std;
 //#define MULTIPLYINTEGRATION
 
 ///runtype
-#define RUN
+//#define RUN
 //#define RERUN
 //#define NOANCESTRY
-//#define INITGENOME
+#define INITGENOME
 //#define RERUNINITGENOME
 
 ///initial conditions
-#define INITPOINT
-//#define INITGRAD
-//#define TWOMORPHS
+//#define INITPOINT
+#define INITGRAD
+#define TWOMORPHS
 
 ///morphogen dynamics
 //#define GRADIENT
@@ -47,7 +47,7 @@ using namespace std;
 //#define WAVEFRONT
 
 ///division specs
-#define STATHEAD //no divs in head region
+//#define STATHEAD //no divs in head region
 
 extern char despath[500];
 #if defined(RERUN) || defined(RERUNINITGENOME)
@@ -72,7 +72,7 @@ const int NrMatGeneTypes=2;//gene 0
 const int NrMatGeneTypes=1;//gene 0
 #endif
 
-const int NrSignGeneTypes=0;//0;//4;//2;// genes that diffuse or signal to neighbours
+const int NrSignGeneTypes=2;//0;//4;//2;// genes that diffuse or signal to neighbours
 const int GrowGeneNr=4;//NrMatGeneTypes+NrSignGeneTypes; //the gene that regulates growth
 const int SegmGeneNr=5;//NrMatGeneTypes+NrSignGeneTypes;//gene 5 (was 7) the "output" gene 
 
