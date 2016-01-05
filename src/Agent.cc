@@ -686,7 +686,7 @@ void Agent::MaintenanceIntracellularDynamics(int i)
 	for(k=0;k<NrGeneTypes;k++)
 	  (*iter).maintproteinstates[k]=(*iter).proteinstates[k];//maintproteinstates now contains the average.
   }
-  else if(averagepattern && i>NrDevSteps-MaintInt-1)
+  else if(averagepattern && i>NrDevSteps-MaintInt)
   {
     for(iter=cells.begin();iter!=cells.end();++iter) //for now, consider NrFinalCells the max nr of cells.
 	for(k=0;k<NrGeneTypes;k++){

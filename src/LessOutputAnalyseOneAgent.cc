@@ -23,6 +23,7 @@ char writepath[500];
 char readpath[500];
 char *iterdir="/iterations";
 char *prunedir="/pruning";
+char *divdir="/divisions";
 
 void WriteVertexList(Agent *A,int I)
 {
@@ -533,7 +534,7 @@ void Start(int argc,char **argv)
   strcpy(despath, writepath); //now, we need to write to despath (elsewhere in one of the functions)
   
   char makedir[]="mkdir ";
-  char makecommand[100], makesubdir[100], makesubdir2[100];
+  char makecommand[100], makesubdir[100], makesubdir2[100], makesubdir3[100];
   
   strcpy(makecommand, makedir);
   strcat(makecommand,despath);
@@ -568,8 +569,11 @@ void Start(int argc,char **argv)
       ///make subdirs
       strcpy(makesubdir,makecommand);
       strcpy(makesubdir2,makecommand);
+      strcpy(makesubdir3, makecommand);
       strcat(makesubdir,iterdir);
       strcat(makesubdir2,prunedir);
+      strcat(makesubdir3, divdir);
+      
       if(system(makesubdir)==-1){ //make directory for repeated development
 	  printf("warning: could not make directory \"iterations\". Exiting...\n");
 	  exit(1);
@@ -578,6 +582,12 @@ void Start(int argc,char **argv)
 	  printf("warning: could not make directory \"pruning\". Exiting...\n");
 	  exit(1);
       }
+      if(system(makesubdir3)==-1){ //make directory for repeated development
+	  printf("warning: could not make directory \"divisions\". Exiting...\n");
+	  exit(1);
+      }
+      
+      
   }
   
   
@@ -613,7 +623,7 @@ int main(int argc, char **argv)
  
   char fname3[1000];
   char fname4[1000];
-  Agent *A1;
+  Agent *A1, *A2;
   Agent *Acore;
   Agent *Aminsegm;
   Agent *Anrsegm;
@@ -667,12 +677,12 @@ int main(int argc, char **argv)
     A1->WriteTimepointAgeProfile(iterdir,i+1, NrStorages-1);
     A1->WriteTimepointAgeProfile(iterdir,i+1, 2);
     A1->WriteTimepointAgeProfile(iterdir,i+1, 4);
-    A1->WriteCloneProfile(iterdir, i+1,2);
-    A1->WriteCloneTimecourse(iterdir,i+1,2);
-    A1->WriteCloneTimecourse(iterdir,i+1,4);
-    A1->WriteCloneProfile(iterdir, i+1,4);
-    A1->WriteTimepointGene(iterdir,i+1,0,2);
-    A1->WriteTimepointGene(iterdir,i+1,0,4);
+//     A1->WriteCloneProfile(iterdir, i+1,2);
+//     A1->WriteCloneTimecourse(iterdir,i+1,2);
+//     A1->WriteCloneTimecourse(iterdir,i+1,4);
+//     A1->WriteCloneProfile(iterdir, i+1,4);
+//     A1->WriteTimepointGene(iterdir,i+1,0,2);
+//     A1->WriteTimepointGene(iterdir,i+1,0,4);
     fprintf(f3, "%d %d %d %d\n", i,  A1->cells.size(), A1->nrlongbands, A1->nrbands-A1->nrlongbands); //iteration, bodysize, nrlongbands, nrshortbands
     
     //find minimum and maximum
@@ -692,6 +702,17 @@ int main(int argc, char **argv)
     if(i!=49) //keep the last one for pruning
      delete A1;
   }
+  
+  A2=new Agent();
+  double temp=divprob;
+  divprob=1.;
+  A2->CreateAgentFromFile(readpath,AgentID); //develop it anew
+  A2->WriteEmbryology(divdir);
+  A2->WriteDivisionProfile(divdir, 1);
+  A2->WriteGeneEmbryology(divdir,1, SegmGeneNr); //make more pictures
+  A2->WriteGeneEmbryology(divdir,1, GrowGeneNr); //make more pictures
+  divprob=temp;
+  
   
   fclose(f3);
   sprintf(fname3,"%s/%s",writepath,"minmaxrobust.dat");
