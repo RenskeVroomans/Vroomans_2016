@@ -6,8 +6,8 @@
 CXX = g++
 
 #Flag to see whether we compile normal code or analysis code
-ANA= 
-THO= 
+ANA= "la"
+THO= "la"
 VID=  
 
 CPPFLAGS =  -Wall -O2 -march=x86-64 -mmmx -msse -msse2 -fprefetch-loop-arrays -DDSFMT_MEXP=521 -DHAVE_SSE2
