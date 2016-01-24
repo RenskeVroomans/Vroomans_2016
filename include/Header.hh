@@ -38,8 +38,8 @@ using namespace std;
 //#define TWOMORPHS
 
 ///morphogen dynamics
-#define GRADIENT
-//#define FREEMORPH
+//#define GRADIENT
+#define FREEMORPH
 //#define FREEDIFF
 //#define MORPHUP
 //#define POSTERIORSIGNAL
@@ -72,7 +72,7 @@ const int NrMatGeneTypes=2;//gene 0
 const int NrMatGeneTypes=1;//gene 0
 #endif
 
-const int NrSignGeneTypes=0;//0;//4;//2;// genes that diffuse or signal to neighbours
+const int NrSignGeneTypes=2;//0;//4;//2;// genes that diffuse or signal to neighbours
 const int GrowGeneNr=4;//NrMatGeneTypes+NrSignGeneTypes; //the gene that regulates growth
 const int SegmGeneNr=5;//NrMatGeneTypes+NrSignGeneTypes;//gene 5 (was 7) the "output" gene 
 

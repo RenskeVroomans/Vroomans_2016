@@ -160,12 +160,24 @@ int ReadPars(int argc, char* argv[])
     cout<<"parfile used: "<<&vc[0][0]<<endl;
     ifstream parf(&vc[0][0]);
     /*************/
-  
+ 
+    
     po::store(po::parse_config_file(parf, config), vm);
     
     po::notify(vm);    
     
     /***variables with calculations***/
+    
+    
+    /**** warning for variables that are set but not used in fitness criterium ****/
+    if(sizebonus<0.0001)
+      cout<<"WARNING: sizebonus set to zero"<<endl;
+    if(sizepen<0.0001)
+      cout<<"WARNING: sizepen set to zero"<<endl;
+    if(stablesizepen<0.0001)
+      cout<<"WARNING: stablesizepen set to zero"<<endl;
+    
+    
     
     //in Agent.cc:
     StorageInt=(int)ceil((double)NrDevSteps/(double)(NrStorages-1));

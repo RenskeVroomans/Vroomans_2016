@@ -317,14 +317,14 @@ void Agent::CellCellSignalling(int t)
 
 #ifdef FREEMORPH
 //the morphogen behaves like every other gene; just forms asymmetric initial condition.
-iter=cells.begin();
-
-(*iter).proteinstates[0]+=morphinflux;
-for(int ii=0;ii<G->gnrgenes_;ii++)
-{
-  if(G->genetypeorder[ii]<NrMatGeneTypes)
-    (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
-}
+// iter=cells.begin();
+// 
+// (*iter).proteinstates[0]+=morphinflux;
+// for(int ii=0;ii<G->gnrgenes_;ii++)
+// {
+//   if(G->genetypeorder[ii]<NrMatGeneTypes)
+//     (*iter).genestates[ii]=(*iter).proteinstates[G->genetypeorder[ii]]/(double)G->genetypenrs[G->genetypeorder[ii]];
+// }
 #endif
 
 #ifdef FREEDIFF
@@ -557,7 +557,17 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	    (*iter).divisioncounter=0; //reset division counter
 	    Cell c(anrcells_);
 	    anrcells_++;
-	    //c.SetCellState(G);
+	    
+	    //halve the concentration of the grow gene
+	    (*iter).proteinstates[GrowGeneNr]*=0.5;
+	    for(int k=0;k<G->gnrgenes_;k++)
+	    {
+	      if(G->genetypeorder[k]==GrowGeneNr)
+	      {
+		(*iter).genestates[k]*=0.5;
+	      }
+	    }
+	    
 	    //set daughter cell to state of parent cell
 	    for(int i=0;i<NrGeneTypes;i++) 
 	    {
@@ -568,18 +578,6 @@ void Agent::DivideCells(void)//the first cell in the growthzone divides, inserti
 	    for(int k=0;k<G->gnrgenes_;k++)
 	    {
 	      c.genestates[k]=(*iter).genestates[k];
-	    }
-	    
-	    //halve the concentration of the grow gene
-	    c.proteinstates[GrowGeneNr]*=0.5;//=0.; //
-	    (*iter).proteinstates[GrowGeneNr]*=0.5;//=0.;//
-	    for(int k=0;k<G->gnrgenes_;k++)
-	    {
-	      if(G->genetypeorder[k]==GrowGeneNr)
-	      {
-		c.genestates[k]*=0.5;
-		(*iter).genestates[k]*=0.5;
-	      }
 	    }
 	    
 	    cells.insert(iter,c);//cell is inserted before the current cell.
@@ -881,10 +879,10 @@ void Agent::DetermineFitness(int mode)
        if(length>=minlength)
        {
 	 bands[i][3]=1;
-	 /// for regularity 
-	 if(boundaries[i]<anrcells_-InitNrCells)
-	   lengtharray.push_back(length); //don't count the headbands
-	 
+// 	 /// for regularity 
+// 	 if(boundaries[i]<anrcells_-InitNrCells)
+// 	   lengtharray.push_back(length); //don't count the headbands
+// 	 
 	   
 	 nrlongbands++;
        }
@@ -903,18 +901,18 @@ void Agent::DetermineFitness(int mode)
        }
      }*/
      
-     double difflengths=0.;
-     if (nrlongbands>2)//do not punish the 2-stripe state for not being equal
-     {
-       for(i=0; i<nrbands-2; i++) //note that the head segment may give some issues
-       {
-	 difflengths+=(double)abs(lengtharray[i]-lengtharray[i+1]);// /((lengtharray[i]+lengtharray[i+1])/2);
-       }
-       //difflengths/=nrlongbands;
-     }
-     else 
-       difflengths=0;
-     
+//      double difflengths=0.;
+//      if (nrlongbands>2)//do not punish the 2-stripe state for not being equal
+//      {
+//        for(i=0; i<nrbands-2; i++) //note that the head segment may give some issues
+//        {
+// 	 difflengths+=(double)abs(lengtharray[i]-lengtharray[i+1]);// /((lengtharray[i]+lengtharray[i+1])/2);
+//        }
+//        //difflengths/=nrlongbands;
+//      }
+//      else 
+//        difflengths=0;
+//      
      //min nr of (long enough) segments is 1
      if(nrlongbands==0)
        nrlongbands=1;
@@ -956,15 +954,21 @@ void Agent::DetermineFitness(int mode)
      
      shortsegpenalty=nrbands-nrlongbands;
      
-     sizefit=sizebonus*(min((double)cells.size()-InitNrCells,(double)targetsize)-InitNrCells)-sizepen*(max(0., (double)cells.size()-(double)targetsize))-stablesizepen*(cells.size()-maintsize); //growing bigger helps by itself
+     sizefit=0.;
+     if(sizebonus>0.0001)
+       sizefit=sizebonus*(min((double)cells.size()-InitNrCells,(double)targetsize)-InitNrCells);//growing bigger helps by itself
+     if(sizepen>0.0001)
+       sizefit-=sizepen*(max(0., (double)cells.size()-(double)targetsize));//penalty for growing too large
+     if(stablesizepen>0.0001)
+       sizefit-=stablesizepen*(cells.size()-maintsize);//penalty for growing at the end of development; 
          
      //regularity penalty is now a bonus
-     if(nrlongbands>2)
-       regpenalty=(regpen*2)/(difflengths+2); //penalty for different sizes of the "big enough" segments
-     else
-       regpenalty=0;
+//      if(nrlongbands>2)
+//        regpenalty=(regpen*2)/(difflengths+2); //penalty for different sizes of the "big enough" segments
+//      else
+//        regpenalty=0;
      
-     nonexpfitness=max(0.001,(nrlongbands+sizefit-glpenalty-instpenalty-shortsegpenalty+regpenalty));
+     nonexpfitness=max(0.001,(nrlongbands+sizefit-glpenalty-instpenalty-shortsegpenalty/*+regpenalty*/));
      double selcoef=1.0;
      fitness=exp(selcoef*nonexpfitness)-1.;
      
@@ -1287,7 +1291,7 @@ void Agent::WriteEmbryology(char *dirname)
   char fname[500];
   const int zoom=4;
   const int WW=zoom*NrFinalCells;
-  const int LL=zoom*(NrStorages+1);
+  const int LL=zoom*(NrStorages);//NrStorages+1
   int celltypes[LL][WW];
   unsigned char RGBdata[LL*WW*3];
   // int type;
@@ -1302,15 +1306,15 @@ void Agent::WriteEmbryology(char *dirname)
 	    celltypes[zoom*i+ii][zoom*j+jj]=color;
       }
 
-  //extra row to show segment generalized celltype classes
-  i=NrStorages;
-  for(j=0;j<NrFinalCells;j++)
-    {
-      color=CellTypeToColor(bandtypes[j]);
-      for(ii=0;ii<zoom;ii++)
-	for(jj=0;jj<zoom;jj++)
-	  celltypes[zoom*(NrStorages)+ii][zoom*j+jj]=color;
-    }
+//   //extra row to show segment generalized celltype classes
+//   i=NrStorages;
+//   for(j=0;j<NrFinalCells;j++)
+//     {
+//       color=CellTypeToColor(bandtypes[j]);
+//       for(ii=0;ii<zoom;ii++)
+// 	for(jj=0;jj<zoom;jj++)
+// 	  celltypes[zoom*(NrStorages)+ii][zoom*j+jj]=color;
+//     }
  
   for(i=0;i<LL;i++)
     for(j=0;j<WW;j++)
